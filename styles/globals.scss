@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap");
+
+* {
+   padding: 0;
+   margin: 0;
+   box-sizing: border-box;
+
+   --color-primary: #ff495c;
+   --color-secundary: #EB2F43;
+
+   --text-color-primary: #4d4d4d;
+   --text-color-secundary: #636262;
+}
+
+body {
+   font-family: "Inter", sans-serif;
+}
+
+.body {
+   display: flex;
+   min-height: 100vh;
+   flex-direction: column;
+   justify-content: space-between;
+}
