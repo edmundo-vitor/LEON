@@ -1,10 +1,11 @@
+import type { NextPage } from 'next';
 import ButtonPrimary from '../components/ButtonPrimary';
 
 import style from '../../styles/index.module.scss';
 import pilatesImage from '../../public/assets/pilates.png';
 
 
-export default function Home() {
+const Home: NextPage = () => {
    return (
       <div className={style.contentContainer}>
 
@@ -29,3 +30,5 @@ export default function Home() {
       </div>     
    );
 }
+
+export default Home;
