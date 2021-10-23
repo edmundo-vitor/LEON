@@ -12,9 +12,21 @@
    --text-color-secundary: #636262;
 }
 
-body {
-   font-family: "Inter", sans-serif;
-}
+@media (max-width: 1080px) {
+   html {
+     font-size: 93.75%;
+   }
+ }
+ 
+ @media (max-width: 720px) {
+   html {
+     font-size: 87.5%;
+   }
+ }
+
+body, input, textarea, select, button {
+   font: 400 1rem "Inter", sans-serif;
+ }
 
 .body {
    display: flex;
