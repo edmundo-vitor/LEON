@@ -33,6 +33,8 @@ export default function TeacherForm(props) {
     const [teacherCity, setTeacherCity] = useState(props.isForEditing ? teacher.city : "");
     const [teacherNumber, setTeacherNumber] = useState(props.isForEditing ? teacher.number : 0);
     const [teacherTelephone, setTeacherTelephone] = useState(props.isForEditing ? teacher.telephone : "");
+    const [teacherBranch, setTeacherBranch] = useState(props.isForEditing ? teacher.branch.name : "");
+
 
     const branches = [{
         "id": 2,
@@ -136,7 +138,7 @@ export default function TeacherForm(props) {
                         <option key={index} value={branch.id}>{branch.name} </option>
                     )
                 })}
-                {props.isForEditing ? <option value={teacher.branch.id} selected>{teacher.branch.name} </option> : null}
+                {props.isForEditing ? <option value={teacherBranch} selected>{teacherBranch} </option> : null}
             </select>
         )
     }
