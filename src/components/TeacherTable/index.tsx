@@ -1,71 +1,12 @@
 import { useRouter } from 'next/dist/client/router';
+import { useState } from 'react';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import ButtonPrimary from '../ButtonPrimary';
 import style from './style.module.scss';
 
-export default function TeacherTable() {
+export default function TeacherTable(props) {
 
-    const teachers = [{
-        "id": 3,
-        "name": "Outro nome qualquer",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }, {
-        "id": 4,
-        "name": "Mais algum nome",
-        "address": "Estúdio 1 - Rua tal"
-    }]
+    const [teachers, setTeachers] = useState(props.teachersList)
 
     function renderTable() {
         return (
@@ -88,19 +29,19 @@ export default function TeacherTable() {
     }
 
     function renderTableData() {
-        return teachers.map((teacher, index) => {
+        return teachers.map(teacher => {
             return (
-                <tr key={index}>
-                    <td>{index + 1}</td>
+                <tr key={teacher.id}>
+                    <td>{teacher.id}</td>
                     <td>{teacher.name}</td>
                     <td>{teacher.address}</td>
-                    {renderTableAction()}
+                    {renderTableAction(teacher.id)}
                 </tr>
             )
         })
     }
 
-    function renderTableAction() {
+    function renderTableAction(id) {
         return (
             <td className={style.button}>
                 <button className="btn btn-sm">
@@ -109,7 +50,8 @@ export default function TeacherTable() {
                         <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
                     </svg>
                 </button>
-                <button className="btn btn-sm">
+                <button onClick={() => router.push("/teachers/edit/" + id)}
+                    className="btn btn-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
                     </svg>

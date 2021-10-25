@@ -7,9 +7,9 @@ const Action: NextPage = () => {
    const router = useRouter()
 
    function renderAction() {
-      if (router.query.action === "register") {
+      if (router.query.action === "edit") {
          return (
-            <TeacherForm />
+            <TeacherForm teacherId={router.query.index} isForEditing/>
          )
       }
    }

@@ -1,15 +1,38 @@
 import { useRouter } from 'next/dist/client/router';
+import { useState } from 'react';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import ButtonPrimary from '../ButtonPrimary';
 import style from './style.module.scss';
 
-export default function TeacherTable() {
+export default function TeacherForm(props) {
 
-    const teachers = [{
-        "id": 3,
-        "name": "Outro nome qualquer",
-        "address": "Estúdio 1 - Rua tal"
-    }]
+    //Deve usar o findById(teacherId) pois os atributos recebidos para
+    //fazer a edição são diferentes dos atributos vistos apenas na 
+    //tebela que mostra todos professores
+    const teacher = {
+        "id": props.teacherId,
+        "name": "Mais algum nome",
+        "email": "professor@gmail.com",
+        "road": "Rua tal",
+        "state": "RN",
+        "city": "Mossoró",
+        "number": 52,
+        "telephone": "(84) 9 9999-9999",
+        "branch":
+        {
+            "id": 1,
+            "name": "Filial Mossoró"
+        }
+    }
+
+    const router = useRouter();
+
+    const [teacherName, setTeacherName] = useState(props.isForEditing ? teacher.name : "");
+    const [teacherEmail, setTeacherEmail] = useState(props.isForEditing ? teacher.email : "");
+    const [teacherRoad, setTeacherRoad] = useState(props.isForEditing ? teacher.road : "");
+    const [teacherState, setTeacherState] = useState(props.isForEditing ? teacher.state : "");
+    const [teacherCity, setTeacherCity] = useState(props.isForEditing ? teacher.city : "");
+    const [teacherNumber, setTeacherNumber] = useState(props.isForEditing ? teacher.number : 0);
+    const [teacherTelephone, setTeacherTelephone] = useState(props.isForEditing ? teacher.telephone : "");
 
     const branches = [{
         "id": 2,
@@ -37,7 +60,8 @@ export default function TeacherTable() {
         { "nome": "Rondônia", "sigla": "RO" },
     ]
 
-    const cities = ["Montanhas",
+    const cities = [
+        "Montanhas",
         "Monte Alegre",
         "Monte das Gameleiras",
         "Mossoró",
@@ -45,20 +69,27 @@ export default function TeacherTable() {
         "Nísia Floresta",
         "Nova Cruz"]
 
+
     function renderForm() {
         return (
             <form className={style.form}>
                 <label className={style.label}>
                     Nome*
-                    <input type="text" name="name" className="form-control" />
+                    <input type="text" name="name" className="form-control"
+                        value={teacherName}
+                        onChange={e => setTeacherName(e.target.value)} />
                 </label>
                 <label className={style.label}>
                     Telefone*
-                    <input type="text" name="telephone" className="form-control" />
+                    <input type="text" name="telephone" className="form-control"
+                        value={teacherTelephone}
+                        onChange={e => setTeacherTelephone(e.target.value)} />
                 </label>
                 <label className={style.label}>
                     Email*
-                    <input type="text" name="email" className="form-control" />
+                    <input type="text" name="email" className="form-control"
+                        value={teacherEmail}
+                        onChange={e => setTeacherEmail(e.target.value)} />
                 </label>
                 <label className={style.label}>
                     Senha*
@@ -70,7 +101,9 @@ export default function TeacherTable() {
                 </label>
                 <label className={style.label}>
                     Rua*
-                    <input type="text" name="road" className="form-control" />
+                    <input type="text" name="road" className="form-control"
+                        value={teacherRoad}
+                        onChange={e => setTeacherRoad(e.target.value)} />
                 </label>
                 <label className={style.label}>
                     Estado*
@@ -82,11 +115,13 @@ export default function TeacherTable() {
                 </label>
                 <label className={style.label}>
                     Número*
-                    <input type="number" name="number" className="form-control" />
+                    <input type="number" name="number" className="form-control"
+                        value={teacherNumber}
+                        onChange={e => setTeacherNumber(+e.target.value)} />
                 </label>
-                <button className={style.registerButton}
+                <button type="button" className={style.registerButton}
                     onClick={() => router.push("/teachers")}>
-                    Cadastrar
+                    {props.isForEditing ? "Salvar" : "Cadastrar"}
                 </button>
 
             </form>
@@ -101,6 +136,7 @@ export default function TeacherTable() {
                         <option key={index} value={branch.id}>{branch.name} </option>
                     )
                 })}
+                {props.isForEditing ? <option value={teacher.branch.id} selected>{teacher.branch.name} </option> : null}
             </select>
         )
     }
@@ -113,6 +149,8 @@ export default function TeacherTable() {
                         <option key={index} value={state.sigla}>{state.sigla} </option>
                     )
                 })}
+                {props.isForEditing ? <option value={teacherState} selected>{teacherState}</option> : null}
+
             </select>
         )
     }
@@ -125,11 +163,11 @@ export default function TeacherTable() {
                         <option key={index} value={state}>{state} </option>
                     )
                 })}
+                {props.isForEditing ? <option value={teacherCity} selected>{teacherCity}</option> : null}
+
             </select>
         )
     }
-
-    const router = useRouter();
 
     return (
         <>
