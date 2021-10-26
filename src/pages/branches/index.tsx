@@ -1,10 +1,10 @@
 import type { NextPage } from 'next';
+import { useState } from 'react';
 import BranchTable from '../../components/BranchTable';
-
 
 const Branch: NextPage = () => {
 
-   const branches = [{
+   const [branches, setBranches] = useState([{
       "id": 4,
       "name": "Filial Mossoró",
       "state": "Rio Grande do Norte",
@@ -92,11 +92,11 @@ const Branch: NextPage = () => {
       "streetNumber": 123,
       "city": "Mossoró",
       "description": "Filial Principal"
-   }]
+   }])
 
    return (
       <div>
-         <BranchTable branchesList={branches} />
+         <BranchTable branchesList={branches} setBranchesList={setBranches} />
       </div>
    );
 }

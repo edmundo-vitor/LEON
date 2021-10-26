@@ -1,12 +1,12 @@
 import type { NextPage } from 'next';
+import { useState } from 'react';
 import ScheduleTable from '../../components/ScheduleTable';
-
 
 const Schedule: NextPage = () => {
 
-   const schedules = [{
+   const [schedules, setSchedules] = useState([{
       "id": 4,
-      "name": {
+      "modality": {
          "id": 1,
          "name": "Pilates"
       }, "branch": {
@@ -154,11 +154,11 @@ const Schedule: NextPage = () => {
       "scheduleStart": "07:00",
       "scheduleEnd": "09:00",
       "maxUsers": 5
-   },]
+   },])
 
    return (
       <div>
-         <ScheduleTable schedulesList={schedules} />
+         <ScheduleTable schedulesList={schedules} setSchedulesList={setSchedules} />
       </div>
    );
 }
