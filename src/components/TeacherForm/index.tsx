@@ -160,9 +160,9 @@ export default function TeacherForm(props) {
     function renderCitySelection() {
         return (
             <select name="city" className="form-control">
-                {cities.map((state, index) => {
+                {cities.map((city, index) => {
                     return (
-                        <option key={index} value={state}>{state} </option>
+                        <option key={index} value={city}>{city} </option>
                     )
                 })}
                 {props.isForEditing ? <option value={teacherCity} selected>{teacherCity}</option> : null}

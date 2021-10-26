@@ -6,7 +6,7 @@ const Schedule: NextPage = () => {
 
    const schedules = [{
       "id": 4,
-      "modality": {
+      "name": {
          "id": 1,
          "name": "Pilates"
       }, "branch": {
