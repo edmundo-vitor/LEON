@@ -87,13 +87,15 @@ export default function BranchTable(props) {
     const router = useRouter();
 
     return (
-        <>
-            <div className={style.registerButton} onClick={() => router.push("/branches/register")}>
-                <ButtonPrimary>Cadastrar nova filial</ButtonPrimary>
+        <div className={style.containerBody}>
+            <div className={style.registerButton}>
+               <div onClick={() => router.push("/branches/register")}>
+                  <ButtonPrimary>Cadastrar nova filial</ButtonPrimary>
+               </div>
             </div>
             <div className={style.body}>
                 {renderTable()}
             </div>
-        </>
+        </div>
     )
 }

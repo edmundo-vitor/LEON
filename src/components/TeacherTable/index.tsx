@@ -80,13 +80,15 @@ export default function TeacherTable(props) {
     }
 
     return (
-        <>
-            <div className={style.registerButton} onClick={() => router.push("/teachers/register")}>
-                <ButtonPrimary>Cadastrar novo professor</ButtonPrimary>
+        <div className={style.containerBody}>
+            <div className={style.registerButton}>
+               <div onClick={() => router.push("/teachers/register")}>
+                  <ButtonPrimary>Cadastrar novo professor</ButtonPrimary>
+               </div>
             </div>
             <div className={style.body}>
                 {renderTable()}
             </div>
-        </>
+        </div>
     )
 }

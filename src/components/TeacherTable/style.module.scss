@@ -1,3 +1,9 @@
+.containerBody {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+}
+
 .body {
     position: relative;
     display: flex;

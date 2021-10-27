@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import SidebarMenu from '../../components/SidebarMenu';
 import TeacherTable from '../../components/TeacherTable';
 
 
@@ -51,7 +52,8 @@ const Teacher: NextPage = () => {
    }]
 
    return (
-      <div>
+      <div className="flexRow">
+         <SidebarMenu />
          <TeacherTable teachersList={teachers} />
       </div>
    );

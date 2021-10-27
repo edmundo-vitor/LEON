@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
 import BranchTable from '../../components/BranchTable';
+import SidebarMenu from '../../components/SidebarMenu';
 
 const Branch: NextPage = () => {
 
@@ -95,7 +96,8 @@ const Branch: NextPage = () => {
    }])
 
    return (
-      <div>
+      <div className="flexRow">
+         <SidebarMenu />
          <BranchTable branchesList={branches} setBranchesList={setBranches} />
       </div>
    );
