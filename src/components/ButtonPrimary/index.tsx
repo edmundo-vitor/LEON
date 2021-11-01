@@ -1,9 +1,15 @@
-import style from './style.module.scss';
+import { ButtonHTMLAttributes } from "react";
+import style from "./style.module.scss";
 
-const ButtonPrimary: React.FC = ({ children }) => {
-   return (
-      <button className={style.buttonPrimary}>{children}</button>
-   );
-}
+const ButtonPrimary = ({
+  children,
+  ...rest
+}: ButtonHTMLAttributes<HTMLButtonElement>) => {
+  return (
+    <button className={style.buttonPrimary} {...rest}>
+      {children}
+    </button>
+  );
+};
 
 export default ButtonPrimary;

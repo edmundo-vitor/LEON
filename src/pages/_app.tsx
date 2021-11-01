@@ -8,9 +8,7 @@ import '../../styles/globals.scss';
 function MyApp({ Component, pageProps }: AppProps) {
    return (
       <div className="body">
-         <NavBar />
          <Component {...pageProps} />
-         <Footer />
       </div>
    );
 }

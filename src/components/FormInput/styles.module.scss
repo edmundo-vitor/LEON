@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  flex-direction: column;
+
+  .flex {
+    display: flex;
+    justify-content: space-between;
+
+    > span {
+      align-self: flex-end;
+      color: red;
+      font-size: 0.75rem;
+    }
+
+    label {
+      color: #2D3748;
+      font-weight: 500;
+      padding-right: 1rem;
+  
+      span {
+        display: inline-block;
+        margin-left: -0.3rem;
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  input {
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #999;
+
+    transition: box-shadow 0.2s;
+
+    &:focus {
+      box-shadow: inset 0px 0px 0px 2px #999;
+    }
+  }
+}
