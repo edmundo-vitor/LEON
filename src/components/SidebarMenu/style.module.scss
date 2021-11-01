@@ -1,0 +1,15 @@
+.sidebarMenu {
+   display: flex;
+   flex-direction: column;
+   flex-grow: 1;
+   background-color: #FF495C;
+
+   a {
+      display: flex;
+      justify-content: center;
+      text-decoration: none;
+      color: #fff;
+      padding: 15px 50px;
+      margin-left: 5px;
+   }
+}

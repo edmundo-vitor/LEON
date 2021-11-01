@@ -10,6 +10,8 @@
 
    --text-color-primary: #4d4d4d;
    --text-color-secundary: #636262;
+
+   --form-background-color: #acacac67;
 }
 
 @media (max-width: 1080px) {
@@ -33,4 +35,21 @@ body, input, textarea, select, button {
    min-height: 100vh;
    flex-direction: column;
    justify-content: space-between;
+}
+
+.flexRow {
+   display: flex;
+   flex-direction: row;
+   flex-grow: 1;
+}
+
+.flexColumn {
+   display: flex;
+   flex-direction: column;
+}
+
+.activeMenu {
+   background-color: #fff;
+   border-radius: 50px 0 0 50px;
+   color: #FF495C !important;  
 }
