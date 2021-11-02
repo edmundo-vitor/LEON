@@ -11,12 +11,12 @@ export default function SidebarMenu() {
    return (
       <div className={style.sidebarMenu}>
          <Link href="#"><a className={router.asPath == "/#" ? "active" : ""}>Modalidades</a></Link>
-         <Link href="/branches"><a className={router.asPath == "/branches" ? "activeMenu" : ""}>Filiais</a></Link>
-         <Link href="/news"><a className={router.asPath == "/news" ? "activeMenu" : ""}>Notícias</a></Link>
+         <Link href="/branches"><a className={router.asPath.startsWith("/branches") ? "activeMenu" : ""}>Filiais</a></Link>
+         <Link href="/news"><a className={router.asPath.startsWith("/news") ? "activeMenu" : ""}>Notícias</a></Link>
          <Link href="#"><a>Planos</a></Link>
          <Link href="#"><a>Secretários</a></Link>
-         <Link href="#"><a>Usuários</a></Link>
-         <Link href="/teachers"><a className={router.asPath == "/teachers" ? "activeMenu" : ""}>Professores</a></Link>
+         <Link href="/users"><a className={router.asPath.startsWith("/users") ? "activeMenu" : ""}>Usuários</a></Link>
+         <Link href="/teachers"><a className={router.asPath.startsWith("/teachers") ? "activeMenu" : ""}>Professores</a></Link>
       </div>
    )
 }
