@@ -10,7 +10,7 @@ export default function SidebarMenu() {
    
    return (
       <div className={style.sidebarMenu}>
-         <Link href="#"><a className={router.asPath == "/#" ? "active" : ""}>Modalidades</a></Link>
+         <Link href="#"><a className={router.asPath == "/modalities" ? "active" : ""}>Modalidades</a></Link>
          <Link href="/branches"><a className={router.asPath == "/branches" ? "activeMenu" : ""}>Filiais</a></Link>
          <Link href="#"><a>Planos</a></Link>
          <Link href="#"><a>Secretários</a></Link>
