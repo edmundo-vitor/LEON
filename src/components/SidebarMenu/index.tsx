@@ -7,11 +7,12 @@ import style from './style.module.scss';
 export default function SidebarMenu() {
 
    const router = useRouter();
-   
+
    return (
       <div className={style.sidebarMenu}>
          <Link href="#"><a className={router.asPath == "/#" ? "active" : ""}>Modalidades</a></Link>
          <Link href="/branches"><a className={router.asPath == "/branches" ? "activeMenu" : ""}>Filiais</a></Link>
+         <Link href="/news"><a className={router.asPath == "/news" ? "activeMenu" : ""}>Notícias</a></Link>
          <Link href="#"><a>Planos</a></Link>
          <Link href="#"><a>Secretários</a></Link>
          <Link href="#"><a>Usuários</a></Link>

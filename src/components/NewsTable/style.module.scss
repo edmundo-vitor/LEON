@@ -17,6 +17,27 @@
     margin-top: 15px;
 }
 
+.title{
+    width: 18%;
+}
+
+.description{
+    width: 40%;
+}
+
+.date{
+    width: 8%;
+    min-width: 100px;
+}
+
+.image{
+    width: 15%;
+}
+
+.actions{
+    width: 45%;
+}
+
 .registerButton {
     display: flex;
     flex-direction: column;
