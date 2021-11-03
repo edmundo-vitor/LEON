@@ -40,7 +40,10 @@ export default function Modalities() {
                       <td>{modality.name}</td>
                       <td>{modality.description}</td>
                       <td>
-                        <HStack spacing="1">
+                        <HStack
+                          spacing="1"
+                          style={{ justifyContent: "center" }}
+                        >
                           <AiOutlineInfoCircle size="20" />
                           <AiFillEdit size="20" color="gray" />
                           <AiFillDelete

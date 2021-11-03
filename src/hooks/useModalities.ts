@@ -1,15 +1,15 @@
 import { useState } from "react";
 
-interface Schedule {
-  id: string;
+export interface Schedule {
+  id: number;
   start: Date;
   end: Date;
-  day: string;
+  days: string[];
   vacancies: number;
   teacher: string;
 }
 
-interface Modality {
+export interface Modality {
   id: number;
   name: string;
   description: string;
