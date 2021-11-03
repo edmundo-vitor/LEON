@@ -23,7 +23,7 @@ export const usersList: User[] = [
       branchId: 1,
       active: true,
       restitution: 0
-   }, 
+   },
    {
       id: 2,
       email: "teste2@gmail.com",
@@ -35,7 +35,7 @@ export const usersList: User[] = [
       branchId: 1,
       active: true,
       restitution: 0
-   }, 
+   },
    {
       id: 3,
       email: "teste3@gmail.com",
@@ -49,3 +49,6 @@ export const usersList: User[] = [
       restitution: 0
    }
 ];
+
+//funcao para saber se é a acesso é de um usuário ou administrador
+export const isUser: boolean = false;
