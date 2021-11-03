@@ -34,8 +34,8 @@ export default function NavBar(props) {
             </div>
             :
             <div className={style.menuContainer}>
-               <Link href="#"><a>Início</a></Link>
-               <Link href="#"><a>Sobre</a></Link>
+               <Link href="/"><a>Início</a></Link>
+               <Link href="/about"><a>Sobre</a></Link>
                <Link href="#"><a>Modalidades</a></Link>
 
                <div className={style.separator}></div>
