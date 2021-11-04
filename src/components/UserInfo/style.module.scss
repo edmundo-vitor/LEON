@@ -1,0 +1,60 @@
+.containerBody {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.form {
+    width: 60%;  
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    background-color: var(--form-background-color)
+}
+
+.label {
+    margin-top: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    width: 100%;
+}
+
+.select {
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 145px;
+    height: 30px;
+}
+
+.saveButton {
+    color: #fff;
+    background-color: rgba(255, 0, 0, 0.712);
+    border: none;
+    padding: 1vh 1vw;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    width: 50%;
+    margin-top: 30px;
+}
+
+.backButton {
+    color: #fff;
+    border: none;
+    background-color: rgba(0, 128, 0, 0.836);
+    padding: 1vh 1vw;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    width: 50%;
+    margin-top: 30px;
+}
