@@ -7,31 +7,25 @@ import style from "../../styles/index.module.scss";
 import pilatesImage from "../../public/assets/pilates.png";
 
 const Home: NextPage = () => {
-  return (
-    <div className="body">
-      <NavBar />
+   return (
       <div className={style.contentContainer}>
-        <div className={style.announcement}>
-          <div className={style.textAnnouncement}>
-            <div>
-              <a href="#">
-                <ButtonPrimary>Agende</ButtonPrimary>
-              </a>
-              <h2>já a sua</h2>
-            </div>
+         <div className={style.announcement}>
+            <div className={style.textAnnouncement}>
+               <div>
+                  <a href="#">
+                     <ButtonPrimary>Agende</ButtonPrimary>
+                  </a>
+                  <h2>já a sua</h2>
+               </div>
 
-            <div>
-              <h1>aula experimental!</h1>
+               <div>
+                  <h1>aula experimental!</h1>
+               </div>
             </div>
-          </div>
-          <img src={pilatesImage.src} />
-        </div>
-
-        <div></div>
+            <img src={pilatesImage.src} />
+         </div>
       </div>
-      <Footer />
-    </div>
-  );
+   );
 };
 
 export default Home;

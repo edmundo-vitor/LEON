@@ -40,8 +40,8 @@ export default function NavBar(props) {
 
                <div className={style.separator}></div>
 
-               <Link href="#"><a><ButtonPrimary>Entrar</ButtonPrimary></a></Link>
-               <Link href="#"><a className={style.register}>Cadastre-se</a></Link>
+               <Link href="/login"><a><ButtonPrimary>Entrar</ButtonPrimary></a></Link>
+               <Link href="/register"><a className={style.register}>Cadastre-se</a></Link>
             </div>
          }
       </nav>

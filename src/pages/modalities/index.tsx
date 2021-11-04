@@ -12,8 +12,6 @@ export default function Modalities() {
   const { modalities, removeModality } = useModalities();
 
   return (
-    <>
-      <NavBar />
       <div className="flexRow">
         <SidebarMenu />
         <div className={styles.content}>
@@ -62,6 +60,5 @@ export default function Modalities() {
           </div>
         </div>
       </div>
-    </>
   );
 }

@@ -16,7 +16,7 @@ export default function SidebarMenu(props) {
             </>
             :
             <>
-               <Link href="/modalities"><a className=className={router.asPath.startsWith("/modalities") ? "activeMenu" : ""}>Modalidades</a></Link>
+               <Link href="/modalities"><a className={router.asPath.startsWith("/modalities") ? "activeMenu" : ""}>Modalidades</a></Link>
                <Link href="/branches"><a className={router.asPath.startsWith("/branches") ? "activeMenu" : ""}>Filiais</a></Link>
                <Link href="/news"><a className={router.asPath.startsWith("/news") ? "activeMenu" : ""}>Notícias</a></Link>
                <Link href="/plans"><a className={router.asPath.startsWith("/plans") ? "activeMenu" : ""}>Planos</a></Link>
