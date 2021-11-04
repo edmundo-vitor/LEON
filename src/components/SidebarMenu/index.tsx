@@ -1,8 +1,7 @@
-import { useRouter } from 'next/dist/client/router';
-import Link from 'next/link';
-import React from 'react';
-import style from './style.module.scss';
-
+import { useRouter } from "next/dist/client/router";
+import Link from "next/link";
+import React from "react";
+import style from "./style.module.scss";
 
 export default function SidebarMenu(props) {
 
@@ -17,7 +16,7 @@ export default function SidebarMenu(props) {
             </>
             :
             <>
-               <Link href="#"><a className={router.asPath == "/#" ? "active" : ""}>Modalidades</a></Link>
+               <Link href="/modalities"><a className=className={router.asPath.startsWith("/modalities") ? "activeMenu" : ""}>Modalidades</a></Link>
                <Link href="/branches"><a className={router.asPath.startsWith("/branches") ? "activeMenu" : ""}>Filiais</a></Link>
                <Link href="/news"><a className={router.asPath.startsWith("/news") ? "activeMenu" : ""}>Notícias</a></Link>
                <Link href="/plans"><a className={router.asPath.startsWith("/plans") ? "activeMenu" : ""}>Planos</a></Link>

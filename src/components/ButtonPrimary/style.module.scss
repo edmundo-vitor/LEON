@@ -1,10 +1,22 @@
 .buttonPrimary {
-   background: var(--color-primary);
-   color: #fff;
-   border: none;
-   padding: 1vh 1vw;
-   border-radius: 10px;
-   cursor: pointer;
-   font-family: 'Inter', sans-serif;
-   font-weight: 500;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: 1vh 1vw;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  display: inline-block;
+
+  transition: filter 0.2s;
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  &:disabled {
+    background: var(--gray-300);
+    cursor: not-allowed;
+  }
 }

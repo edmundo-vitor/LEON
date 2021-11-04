@@ -10,7 +10,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       <div className="body">
          <NavBar isUser={isUser}/>
          <Component {...pageProps} />
-         <Footer />
       </div>
    );
 }
