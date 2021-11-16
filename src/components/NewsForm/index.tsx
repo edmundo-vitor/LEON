@@ -1,28 +1,42 @@
+import axios from 'axios';
 import { useRouter } from 'next/dist/client/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { formatLocalDate } from '../../utils/format';
+import { BASE_URL } from '../../utils/request';
 import style from './style.module.scss';
 
-export default function NewsForm(props) {
+type NewsProps = {
+    isForEditing?: boolean;
+}
 
-    const news = {
-        "id": 3,
-        "manager": {
-            "id": 1,
-            "name": "João Silva"
-        },
-        "title": "Notícia normal",
-        "description": "Haverá um pequeno evento em breve.",
-        "imageUrl": "https://blogpilates.com.br/wp-content/uploads/2016/02/Studio-de-Pilates-CAPA.png",
-        "date": "2021-10-25"
-    }
-
+export default function NewsForm(props: NewsProps) {
     const router = useRouter();
 
-    const [newsTitle, setNewsTitle] = useState(props.isForEditing ? news.title : "");
-    const [newsDescription, setNewsDescription] = useState(props.isForEditing ? news.description : "");
-    const [newsDate, setNewsDate] = useState(props.isForEditing ? news.date : "");
-    const [newsImageUrl, setNewsImageUrl] = useState(props.isForEditing ? news.imageUrl : "");
+    const [newsTitle, setNewsTitle] = useState("");
+    const [newsDescription, setNewsDescription] = useState("");
+    const [newsDate, setNewsDate] = useState(formatLocalDate(new Date().toDateString(), "yyyy-MM-dd"));
+    const [newsImageUrl, setNewsImageUrl] = useState("");
+    const [newsManager, setNewsManager] = useState(0);
+
+    useEffect(() => {
+        if (props.isForEditing) {
+            axios.get(BASE_URL + '/news/' + router.query.id)
+                .then(response => {
+                    setNewsTitle(response.data.title);
+                    setNewsDescription(response.data.description);
+                    setNewsDate(formatLocalDate(response.data.date, "yyyy-MM-dd"));
+                    setNewsImageUrl(response.data.imageUrl);
+                });
+        }
+
+        //TODO obter id do manager logado, o ideal é obter pelo token
+        axios.get(BASE_URL + '/managers')
+            .then(response => {
+                setNewsManager(response.data.content[0].id);
+            });
+    }, []);
 
     function renderForm() {
         return (
@@ -54,7 +68,7 @@ export default function NewsForm(props) {
                         onChange={e => setNewsImageUrl(e.target.value)} />
                 </label>
                 <button type="button" className={style.registerButton}
-                    onClick={() => router.push("/news")}>
+                    onClick={() => props.isForEditing ? updateBranch() : saveNews()}>
                     {props.isForEditing ? "Salvar" : "Cadastrar"}
                 </button>
 
@@ -62,8 +76,53 @@ export default function NewsForm(props) {
         )
     }
 
+    function saveNews() {
+        axios.post(BASE_URL + '/news', {
+            "title": newsTitle,
+            "description": newsDescription,
+            "imageUrl": newsImageUrl,
+            "date": formatLocalDate(newsDate, "yyyy-MM-dd HH:mm:ss"),
+            "manager": {
+                "id": newsManager
+            }
+        })
+            .then(response => {
+                router.push("/news")
+            })
+            .catch(error => {
+                toast.error("Erro ao criar!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            })
+    }
+
+    function updateBranch() {
+        axios.put(BASE_URL + '/news/' + router.query.id, {
+            "title": newsTitle,
+            "description": newsDescription,
+            "imageUrl": newsImageUrl,
+            "date": formatLocalDate(newsDate, "yyyy-MM-dd HH:mm:ss"),
+            "manager": {
+                "id": newsManager
+            }
+        })
+            .then(response => {
+                toast.success("Atualizado com sucesso!", {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+
+                router.push("/news")
+            })
+            .catch(error => {
+                toast.error("Erro ao atualizar!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            })
+    }
+
     return (
         <>
+            <ToastContainer autoClose={1500} />
             <div className={style.body}>
                 {renderForm()}
             </div>

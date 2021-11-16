@@ -1,13 +1,25 @@
+import axios from 'axios';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { News } from '../../models/News';
+import { BASE_URL } from '../../utils/request';
 import style from './style.module.scss';
 
-export default function News(props) {
-
-    const [news, setNews] = useState(props.newsList)
-
+export default function NewsView() {
     const [search, setSearch] = useState("")
+
+    const [news, setNews] = useState<News[]>([])
+    const [newsFound, setNewsFound] = useState<News[]>([])
+
+    useEffect(() => {
+        axios.get(BASE_URL + '/news')
+            .then(response => {
+                setNews(response.data.content)
+                setNewsFound(response.data.content)
+            });
+    }, []);
+
 
     function renderSearchBar() {
         return (
@@ -16,16 +28,15 @@ export default function News(props) {
                     placeholder="Pesquisar"
                     value={search}
                     onChange={e => {
-                        setSearch(e.target.value)
-                        filterNews(search)
+                        setSearch(e.target.value.toLowerCase())
+                        setNewsFound(
+                            news.filter(item =>
+                                item.title.toLowerCase().includes(e.target.value) ||
+                                item.description.toLowerCase().includes(e.target.value))
+                        )
                     }} />
-
             </div>
         )
-    }
-    
-    const filterNews = (search) => {
-        //Usar o metodo de news findByTitleAndDescription
     }
 
     function renderNews(news) {
@@ -51,27 +62,11 @@ export default function News(props) {
         return (
             <div className={style.newsImage}>
                 <Image
-                    src={item.imageUrl}
+                    src={`/api/imageproxy?url=${encodeURIComponent(item.imageUrl)}`}
                     alt="news image"
                     width="350%"
                     height="300%"
                     className={style.image} />
-            </div>
-        )
-    }
-
-    function renderBigNews(news) {
-        return (
-            <div className={style.bigNews}>
-                Noticia grande
-            </div>
-        )
-    }
-
-    function renderNormalNews(news) {
-        return (
-            <div className={style.normalNews}>
-                Noticia normal
             </div>
         )
     }
@@ -83,7 +78,7 @@ export default function News(props) {
             </div>
             <div className={style.itens}>
                 <hr />
-                {renderNews(news)}
+                {renderNews(newsFound)}
             </div>
         </div>
     )

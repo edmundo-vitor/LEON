@@ -9,7 +9,7 @@ const Action: NextPage = () => {
    function renderAction() {
       if (router.query.action === "edit") {
          return (
-            <NewsForm newsId={router.query.index} isForEditing/>
+            <NewsForm isForEditing/>
          )
       }
    }

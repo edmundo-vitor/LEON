@@ -1,13 +1,28 @@
+import axios from 'axios';
 import { useRouter } from 'next/dist/client/router';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { News } from '../../models/News';
+import { formatLocalDate } from '../../utils/format';
+import { BASE_URL } from '../../utils/request';
 import ButtonPrimary from '../ButtonPrimary';
 import style from './style.module.scss';
-import Image from 'next/image';
 
-export default function NewsTable(props) {
+export default function NewsTable() {
 
-    const news = props.newsList
-    const setNews = props.setNewsList
+    const router = useRouter();
+
+    const [news, setNews] = useState<News[]>([])
+
+    useEffect(() => {
+        axios.get(BASE_URL + '/news')
+            .then(response => {
+                setNews(response.data.content)
+            });
+    }, []);
 
     function renderTable() {
         return (
@@ -37,8 +52,8 @@ export default function NewsTable(props) {
                     <td>{item.id}</td>
                     <td className={style.title}>{item.title}</td>
                     <td className={style.description}>{item.description}</td>
-                    <td className={style.date}>{item.date}</td>
-                    <td className={style.image}> 
+                    <td className={style.date}>{formatLocalDate(item.date, "dd/MM/yyyy")}</td>
+                    <td className={style.image}>
                         {item.imageUrl !== "" ?
                             renderNewsImage(item) : "Sem imagem"}
 
@@ -53,7 +68,7 @@ export default function NewsTable(props) {
         return (
             <div className={style.newsImage}>
                 <Image
-                    src={item.imageUrl}
+                    src={`/api/imageproxy?url=${encodeURIComponent(item.imageUrl)}`}
                     alt="news image"
                     width="150%"
                     height="100%"
@@ -78,7 +93,7 @@ export default function NewsTable(props) {
                     </svg>
                 </button>
                 <button className="btn btn-sm"
-                    onClick={() => deleteBranch(id)}>
+                    onClick={() => deleteNews(id)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
                         <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
@@ -88,20 +103,29 @@ export default function NewsTable(props) {
         )
     }
 
-    function deleteBranch(id) {
-        let newNewsList = []
+    function deleteNews(id: number) {
+        axios.delete(BASE_URL + '/news/' + id)
+            .then(response => {
+                toast.success("Deletado com sucesso!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
 
-        news.map(item => {
-            item.id !== id ? newNewsList.push(item) : null
-        })
-
-        setNews(newNewsList)
+                let newNewsList = []
+                news.map(item => {
+                    item.id !== id ? newNewsList.push(item) : null
+                })
+                setNews(newNewsList)
+            })
+            .catch(error => {
+                toast.error("Erro ao deletar!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            })
     }
-
-    const router = useRouter();
 
     return (
         <div className={style.containerBody}>
+            <ToastContainer autoClose={1500} />
             <div className={style.registerButton}>
                 <div onClick={() => router.push("/news/register")}>
                     <ButtonPrimary>Cadastrar nova notícia</ButtonPrimary>
