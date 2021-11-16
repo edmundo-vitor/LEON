@@ -1,64 +1,38 @@
+import axios from 'axios';
 import { useRouter } from 'next/dist/client/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { BASE_URL } from '../../utils/request';
 import style from './style.module.scss';
 
-export default function BranchForm(props) {
+type BranchProps = {
+    isForEditing?: boolean;
+}
 
-    const branch = {
-        "id": 1,
-        "name": "Filial Mossoró",
-        "state": "Rio Grande do Norte",
-        "road": "Rua Principal",
-        "streetNumber": 123,
-        "city": "Mossoró",
-        "description": "Filial Principal"
-    }
-
+export default function BranchForm(props: BranchProps) {
     const router = useRouter();
 
-    const [branchName, setBranchName] = useState(props.isForEditing ? branch.name : "");
-    const [branchRoad, setBranchRoad] = useState(props.isForEditing ? branch.road : "");
-    const [branchState, setBranchState] = useState(props.isForEditing ? branch.state : "");
-    const [branchCity, setBranchCity] = useState(props.isForEditing ? branch.city : "");
-    const [branchStreetNumber, setBranchStreetNumber] = useState(props.isForEditing ? branch.streetNumber : 0);
-    const [branchDescription, setBranchDescription] = useState(props.isForEditing ? branch.description : "");
+    const [branchName, setBranchName] = useState("");
+    const [branchState, setBranchState] = useState("");
+    const [branchRoad, setBranchRoad] = useState("");
+    const [branchCity, setBranchCity] = useState("");
+    const [branchStreetNumber, setBranchStreetNumber] = useState(0);
+    const [branchDescription, setBranchDescription] = useState("");
 
-    const branches = [{
-        "id": 2,
-        "name": "Filial Mossoró"
-    }, {
-        "id": 4,
-        "name": "Filial Fortaleza"
-    }, {
-        "id": 5,
-        "name": "Filial Natal"
-    }, {
-        "id": 3,
-        "name": "Filial tres"
-    }, {
-        "id": 6,
-        "name": "Filial seis"
-    },]
-
-    const states = [
-        { "nome": "Amazonas", "sigla": "AM" },
-        { "nome": "Bahia", "sigla": "BA" },
-        { "nome": "Ceará", "sigla": "CE" },
-        { "nome": "Rio Grande do Norte", "sigla": "RN" },
-        { "nome": "Rio Grande do Sul", "sigla": "RS" },
-        { "nome": "Rondônia", "sigla": "RO" },
-    ]
-
-    const cities = [
-        "Montanhas",
-        "Monte Alegre",
-        "Monte das Gameleiras",
-        "Mossoró",
-        "Natal",
-        "Nísia Floresta",
-        "Nova Cruz"]
-
+    useEffect(() => {
+        if (props.isForEditing) {
+            axios.get(BASE_URL + '/branches/' + router.query.id)
+                .then(response => {
+                    setBranchName(response.data.name);
+                    setBranchState(response.data.state);
+                    setBranchRoad(response.data.road);
+                    setBranchCity(response.data.city);
+                    setBranchStreetNumber(response.data.streetNumber);
+                    setBranchDescription(response.data.description);
+                });
+        }
+    }, []);
 
     function renderForm() {
         return (
@@ -82,12 +56,16 @@ export default function BranchForm(props) {
                         onChange={e => setBranchStreetNumber(+e.target.value)} />
                 </label>
                 <label className={style.label}>
-                    Cidade*
-                    {renderCitySelection()}
+                    Estado*
+                    <input type="text" name="state" className="form-control"
+                        value={branchState}
+                        onChange={e => setBranchState(e.target.value)} />
                 </label>
                 <label className={style.label}>
-                    Estado*
-                    {renderStateSelection()}
+                    Cidade*
+                    <input type="text" name="city" className="form-control"
+                        value={branchCity}
+                        onChange={e => setBranchCity(e.target.value)} />
                 </label>
                 <label className={style.label}>
                     Descrição*
@@ -96,42 +74,58 @@ export default function BranchForm(props) {
                         onChange={e => setBranchDescription(e.target.value)} />
                 </label>
                 <button type="button" className={style.registerButton}
-                    onClick={() => router.push("/branches")}>
+                    onClick={() => props.isForEditing ? updateBranch() : saveBranch()}>
                     {props.isForEditing ? "Salvar" : "Cadastrar"}
                 </button>
-
             </form>
         )
     }
 
-    function renderStateSelection() {
-        return (
-            <select name="state" className="form-control">
-                {states.map((state, index) => {
-                    return (
-                        <option key={index} value={state.nome}>{state.nome} </option>
-                    )
-                })}
-                {props.isForEditing ? <option value={branchState} selected>{branchState}</option> : null}
-            </select>
-        )
+    function saveBranch() {
+        axios.post(BASE_URL + '/branches', {
+            "name": branchName,
+            "state": branchState,
+            "road": branchRoad,
+            "streetNumber": branchStreetNumber,
+            "city": branchCity,
+            "description": branchDescription
+        })
+            .then(response => {
+                router.push("/branches")
+            })
+            .catch(error => {
+                toast.error("Erro ao criar!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            })
     }
 
-    function renderCitySelection() {
-        return (
-            <select name="city" className="form-control">
-                {cities.map((city, index) => {
-                    return (
-                        <option key={index} value={city}>{city} </option>
-                    )
-                })}
-                {props.isForEditing ? <option value={branchCity} selected>{branchCity}</option> : null}
-            </select>
-        )
+    function updateBranch() {
+        axios.put(BASE_URL + '/branches/' + router.query.id, {
+            "name": branchName,
+            "state": branchState,
+            "road": branchRoad,
+            "streetNumber": branchStreetNumber,
+            "city": branchCity,
+            "description": branchDescription
+        })
+            .then(response => {
+                toast.success("Atualizado com sucesso!", {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+
+                router.push("/branches")
+            })
+            .catch(error => {
+                toast.error("Erro ao atualizar!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            })
     }
 
     return (
         <>
+            <ToastContainer autoClose={1500} />
             <div className={style.body}>
                 {renderForm()}
             </div>

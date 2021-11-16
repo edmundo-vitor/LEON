@@ -9,7 +9,7 @@ const Action: NextPage = () => {
    function renderAction() {
       if (router.query.action === "edit") {
          return (
-            <BranchForm branchId={router.query.index} isForEditing/>
+            <BranchForm isForEditing/>
          )
       }
    }

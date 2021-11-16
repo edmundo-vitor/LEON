@@ -1,12 +1,25 @@
+import axios from 'axios';
 import { useRouter } from 'next/dist/client/router';
-import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Branch } from '../../models/Branch';
+import { BASE_URL } from '../../utils/request';
 import ButtonPrimary from '../ButtonPrimary';
 import style from './style.module.scss';
 
-export default function BranchTable(props) {
+export default function BranchTable() {
 
-    const branches = props.branchesList
-    const setBranches = props.setBranchesList
+    const router = useRouter();
+
+    const [branches, setBranches] = useState<Branch[]>([])
+
+    useEffect(() => {
+        axios.get(BASE_URL + '/branches')
+            .then(response => {
+                setBranches(response.data.content)
+            });
+    }, []);
 
     function renderTable() {
         return (
@@ -74,24 +87,33 @@ export default function BranchTable(props) {
         )
     }
 
-    function deleteBranch(id) {
-        let newBranchesList = []
+    function deleteBranch(id: number) {
+        axios.delete(BASE_URL + '/branches/' + id)
+            .then(response => {
+                toast.success("Deletado com sucesso!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
 
-        branches.map(branch => {
-            branch.id !== id ? newBranchesList.push(branch) : null
-        })
-
-        setBranches(newBranchesList)
+                let newBranchesList = []
+                branches.map(branch => {
+                    branch.id !== id ? newBranchesList.push(branch) : null
+                })
+                setBranches(newBranchesList)
+            })
+            .catch(error => {
+                toast.error("Erro ao deletar!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            })
     }
-
-    const router = useRouter();
 
     return (
         <div className={style.containerBody}>
+            <ToastContainer autoClose={1500} />
             <div className={style.registerButton}>
-               <div onClick={() => router.push("/branches/register")}>
-                  <ButtonPrimary>Cadastrar nova filial</ButtonPrimary>
-               </div>
+                <div onClick={() => router.push("/branches/register")}>
+                    <ButtonPrimary>Cadastrar nova filial</ButtonPrimary>
+                </div>
             </div>
             <div className={style.body}>
                 {renderTable()}
