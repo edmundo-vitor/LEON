@@ -9,7 +9,7 @@ const Action: NextPage = () => {
    function renderAction() {
       if (router.query.action === "edit") {
          return (
-            <ManagerForm managerId={router.query.id.toString()} isForEditing/>
+            <ManagerForm isForEditing/>
          )
       }
    }

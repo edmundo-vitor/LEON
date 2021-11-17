@@ -1,33 +1,50 @@
+import axios from 'axios';
 import { useRouter } from 'next/dist/client/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { Manager } from '../../models/Manager';
+import { BASE_URL } from '../../utils/request';
 import ButtonPrimary from '../ButtonPrimary';
 import style from './style.module.scss';
 
-import { Manager } from '../../models/Manager';
-
-type ManagerTableProps = {
-   managerList: Manager[];
-}
-
-export default function UserTable(props: ManagerTableProps){
-
-   const [managers, setManagers] = useState(props.managerList)
+export default function UserTable() {
 
    const router = useRouter();
 
-   function deleteManager(id:number) {
-      let newManagersList: Manager[] = [];
+   const [managers, setManagers] = useState<Manager[]>([])
 
-      managers.map(user => {
-         user.id !== id ? newManagersList.push(user) : null
-      });
+   useEffect(() => {
+      axios.get(BASE_URL + '/managers')
+         .then(response => {
+            setManagers(response.data.content)
+         });
+   }, []);
 
-      setManagers(newManagersList);
+   function deleteManager(id: number) {
+      axios.delete(BASE_URL + '/managers/' + id)
+         .then(response => {
+            toast.success("Sucesso ao deletar!", {
+               position: toast.POSITION.TOP_RIGHT
+            });
+
+            let newManagersList = []
+            managers.map(manager => {
+               manager.id !== id ? newManagersList.push(manager) : null
+            })
+            setManagers(newManagersList)
+         })
+         .catch(error => {
+            toast.error("Erro ao deletar!", {
+               position: toast.POSITION.TOP_RIGHT
+            })
+         })
    }
 
    return (
       <div className={style.containerBody}>
+         <ToastContainer autoClose={1500} />
          <div className={style.registerButton}>
             <div onClick={() => router.push("/managers/register")}>
                <ButtonPrimary>Cadastrar novo secretário</ButtonPrimary>

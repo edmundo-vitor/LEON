@@ -1,135 +1,123 @@
+import axios from 'axios';
 import { useRouter } from 'next/dist/client/router';
 import { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { Branch } from '../../models/Branch';
+import { BASE_URL } from '../../utils/request';
 import style from './style.module.scss';
 
-import { Manager, managersList } from '../../models/Manager';
-
 type ManagerProps = {
-   managerId?: string;
    isForEditing?: boolean;
 }
 
 export default function UserForm(props: ManagerProps) {
 
-   let manager: Manager = {
-      id: null,
-      name: "",
-      email: "",
-      password: "",
-      address: "",
-      phone: "",
-      permission: "",
-      branchId: null
-   };
-
-   useEffect(() => {
-      function findManager() {
-         managersList.map(item => {
-            if(item.id === Number(props.managerId)){
-               manager = item;
-               setManagerName(item.name);
-               setManagerEmail(item.email);
-               setManagerPassword(item.password);
-               setManagerAddress(item.address);
-               setManagerPhone(item.phone);
-               setManagerPermission(item.permission);
-
-               branches.map(branch => {
-                  if(branch.id === item.branchId)
-                  setManagerBranch(branch.name);
-               });
-            }
-         });
-      }
-
-      if (props.isForEditing)
-         findManager();
-   }, []);
-   
    const router = useRouter();
 
-   const [managerName, setManagerName] = useState(props.isForEditing ? manager.name : "");
-   const [managerEmail, setManagerEmail] = useState(props.isForEditing ? manager.email : "");
-   const [managerPassword, setManagerPassword] = useState(props.isForEditing ? manager.password : "");
-   const [managerAddress, setManagerAddress] = useState(props.isForEditing ? manager.address : "");
-   const [managerPhone, setManagerPhone] = useState(props.isForEditing ? manager.phone : "");
-   const [managerBranch, setManagerBranch] = useState(props.isForEditing ? manager.branchId : "");
-   const [managerPermission, setManagerPermission] = useState(props.isForEditing ? manager.permission : "");
+   const [managerName, setManagerName] = useState("");
+   const [managerEmail, setManagerEmail] = useState("");
+   const [managerPassword, setManagerPassword] = useState("");
+   const [managerAddress, setManagerAddress] = useState("");
+   const [managerPhone, setManagerPhone] = useState("");
+   const [managerPermission, setManagerPermission] = useState("");
+   const [managerBranch, setManagerBranch] = useState(0);
 
-   const branches = [{
-      "id": 2,
-      "name": "Filial Mossoró"
-   }, {
-      "id": 4,
-      "name": "Filial Fortaleza"
-   }, {
-      "id": 5,
-      "name": "Filial Natal"
-   }, {
-      "id": 3,
-      "name": "Filial tres"
-   }, {
-      "id": 6,
-      "name": "Filial seis"
-   }];
+   const [branches, setBranches] = useState<Branch[]>([])
+
+   useEffect(() => {
+      if (props.isForEditing) {
+         axios.get(BASE_URL + '/managers/' + router.query.id)
+            .then(response => {
+               setManagerName(response.data.name);
+               setManagerEmail(response.data.email);
+               setManagerAddress(response.data.address);
+               setManagerPhone(response.data.phone);
+               setManagerPermission(response.data.permission);
+               setManagerBranch(response.data.branches[0].id);
+            });
+      }
+
+      axios.get(BASE_URL + '/branches')
+         .then(response => {
+            setBranches(response.data.content);
+         });
+   }, []);
 
    function renderBranchSelection() {
       return (
-         <select name="branch" className="form-control" onChange={(e) => setManagerBranch(e.target.value)}>
+         <select name="branch" className="form-control"
+            onChange={e => selectBranch(e.target.value)}>
             {branches.map((branch, index) => {
                return (
-                  <option key={index} value={branch.id} >{branch.name} </option>
+                  props.isForEditing ?
+                     branch.id === managerBranch ?
+                        <option key={index} value={branch.id} selected>{branch.name}</option>
+                        :
+                        <option key={index} value={branch.id}>{branch.name}</option>
+                     :
+                     <option key={index} value={branch.id}>{branch.name}</option>
                )
             })}
-            {props.isForEditing ? <option value={managerBranch} defaultValue={managerBranch}>{managerBranch} </option> : null}
          </select>
       )
    }
 
-   function registerManager() {
-      // Gerar um novo id e cadastrar o usuário no array de user
-      manager.id = managersList.length + 1;
-      manager.name = managerName;
-      manager.email = managerEmail;
-      manager.password = managerPassword;
-      manager.address = managerAddress;
-      manager.phone = managerPhone;
-      manager.permission = managerPermission;
-      branches.map(branch => {
-         if(branch.name === managerBranch)
-            manager.branchId = branch.id;
-      });
-
-      managersList.push(manager);
-      router.push("/managers");
+   function selectBranch(id) {
+      branches.map(branch => branch.id == id ? setManagerBranch(id) : null)
    }
 
-   function editManager(id: Number) {
-      managersList.map(item => {
-         if(item.id === id){
-
-            item.name = managerName;
-            item.email = managerEmail;
-            item.password = managerPassword;
-            item.address = managerAddress;
-            item.phone = managerPhone;
-            item.permission = managerPermission;
-
-            branches.map(branch => {
-               if(branch.name === managerBranch)
-                  item.branchId = branch.id;
+   function saveManager() {
+      axios.post(BASE_URL + '/managers', {
+         "name": managerName,
+         "email": managerEmail,
+         "password": managerPassword,
+         "address": managerAddress,
+         "phone": managerPhone,
+         "permission": managerPermission,
+         "branches": [
+            {
+               "id": managerBranch === 0 ? branches[0].id : managerBranch
+            }
+         ]
+      })
+         .then(response => {
+            router.push("/managers")
+         })
+         .catch(error => {
+            toast.error("Erro ao criar!", {
+               position: toast.POSITION.TOP_RIGHT
             });
-         }
-      });
+         })
+   }
 
-      router.push("/managers");
+   function updateBranch() {
+      axios.put(BASE_URL + '/managers/' + router.query.id, {
+         "name": managerName,
+         "email": managerEmail,
+         "address": managerAddress,
+         "phone": managerPhone,
+         "permission": managerPermission,
+         "branches": [
+            {
+               "id": managerBranch === 0 ? branches[0].id : managerBranch
+            }
+         ]
+      })
+         .then(response => {
+            router.push("/managers")
+         })
+         .catch(error => {
+            toast.error("Erro ao atualizar!", {
+               position: toast.POSITION.TOP_RIGHT
+            });
+         })
    }
 
    return (
       <div className={style.body}>
+         <ToastContainer autoClose={1500} />
          <form className={style.form}>
-
             <label className={style.label}>
                Nome*
                <input type="text" name="name" className="form-control"
@@ -151,11 +139,14 @@ export default function UserForm(props: ManagerProps) {
                   onChange={e => setManagerEmail(e.target.value)} />
             </label>
 
-            <label className={style.label}>
-               Senha*
-               <input type="password" name="password" className="form-control" 
-                  onChange={e => setManagerPassword(e.target.value)}/>
-            </label>
+            {!props.isForEditing ?
+               <label className={style.label}>
+                  Senha*
+                  <input type="password" name="password" className="form-control"
+                     onChange={e => setManagerPassword(e.target.value)} />
+               </label>
+               : null
+            }
 
             <label className={style.label}>
                Filial*
@@ -177,7 +168,7 @@ export default function UserForm(props: ManagerProps) {
             </label>
 
             <button type="button" className={style.registerButton}
-               onClick={() => props.isForEditing ? editManager(Number(props.managerId)) : registerManager() }>
+               onClick={() => props.isForEditing ? updateBranch() : saveManager()}>
                {props.isForEditing ? "Salvar" : "Cadastrar"}
             </button>
          </form>

@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import ManagerForm from '../../../components/ManagerForm';
-import SidebarMenu from '../../../components/SidebarMenu'; 
+import SidebarMenu from '../../../components/SidebarMenu';
 
 const Action: NextPage = () => {
 
