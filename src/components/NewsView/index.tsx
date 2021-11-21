@@ -1,9 +1,9 @@
-import axios from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { News } from '../../models/News';
-import { BASE_URL } from '../../utils/request';
+import { requestBackend } from '../../utils/request';
 import style from './style.module.scss';
 
 export default function NewsView() {
@@ -13,13 +13,16 @@ export default function NewsView() {
     const [newsFound, setNewsFound] = useState<News[]>([])
 
     useEffect(() => {
-        axios.get(BASE_URL + '/news')
+        const params: AxiosRequestConfig = {
+            method: 'GET',
+            url: '/news'
+        };
+        requestBackend(params)
             .then(response => {
                 setNews(response.data.content)
                 setNewsFound(response.data.content)
             });
     }, []);
-
 
     function renderSearchBar() {
         return (

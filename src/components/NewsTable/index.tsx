@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import { useRouter } from 'next/dist/client/router';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { News } from '../../models/News';
 import { formatLocalDate } from '../../utils/format';
-import { BASE_URL } from '../../utils/request';
+import { requestBackend } from '../../utils/request';
 import ButtonPrimary from '../ButtonPrimary';
 import style from './style.module.scss';
 
@@ -18,7 +18,11 @@ export default function NewsTable() {
     const [news, setNews] = useState<News[]>([])
 
     useEffect(() => {
-        axios.get(BASE_URL + '/news')
+        const params: AxiosRequestConfig = {
+            method: 'GET',
+            url: '/news'
+        };
+        requestBackend(params)
             .then(response => {
                 setNews(response.data.content)
             });
@@ -104,7 +108,11 @@ export default function NewsTable() {
     }
 
     function deleteNews(id: number) {
-        axios.delete(BASE_URL + '/news/' + id)
+        const params: AxiosRequestConfig = {
+            method: 'DELETE',
+            url: '/news/' + id
+        };
+        requestBackend(params)
             .then(response => {
                 toast.success("Deletado com sucesso!", {
                     position: toast.POSITION.TOP_RIGHT

@@ -1,10 +1,11 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { useRouter } from 'next/dist/client/router';
 import { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { formatLocalDate } from '../../utils/format';
-import { BASE_URL } from '../../utils/request';
+import { BASE_URL, requestBackend } from '../../utils/request';
+import { getAuthData } from '../../utils/storage';
 import style from './style.module.scss';
 
 type NewsProps = {
@@ -22,7 +23,11 @@ export default function NewsForm(props: NewsProps) {
 
     useEffect(() => {
         if (props.isForEditing) {
-            axios.get(BASE_URL + '/news/' + router.query.id)
+            const params: AxiosRequestConfig = {
+                method: 'GET',
+                url: '/news/' + router.query.id
+            };
+            requestBackend(params)
                 .then(response => {
                     setNewsTitle(response.data.title);
                     setNewsDescription(response.data.description);
@@ -31,11 +36,7 @@ export default function NewsForm(props: NewsProps) {
                 });
         }
 
-        //TODO obter id do manager logado, o ideal é obter pelo token
-        axios.get(BASE_URL + '/managers')
-            .then(response => {
-                setNewsManager(response.data.content[0].id);
-            });
+        setNewsManager(getAuthData().managerId);
     }, []);
 
     function renderForm() {
@@ -77,15 +78,20 @@ export default function NewsForm(props: NewsProps) {
     }
 
     function saveNews() {
-        axios.post(BASE_URL + '/news', {
-            "title": newsTitle,
-            "description": newsDescription,
-            "imageUrl": newsImageUrl,
-            "date": formatLocalDate(newsDate, "yyyy-MM-dd HH:mm:ss"),
-            "manager": {
-                "id": newsManager
+        const params: AxiosRequestConfig = {
+            method: 'POST',
+            url: '/news',
+            data: {
+                "title": newsTitle,
+                "description": newsDescription,
+                "imageUrl": newsImageUrl,
+                "date": formatLocalDate(newsDate, "yyyy-MM-dd HH:mm:ss"),
+                "manager": {
+                    "id": newsManager
+                }
             }
-        })
+        };
+        requestBackend(params)
             .then(response => {
                 router.push("/news")
             })
@@ -97,15 +103,20 @@ export default function NewsForm(props: NewsProps) {
     }
 
     function updateBranch() {
-        axios.put(BASE_URL + '/news/' + router.query.id, {
-            "title": newsTitle,
-            "description": newsDescription,
-            "imageUrl": newsImageUrl,
-            "date": formatLocalDate(newsDate, "yyyy-MM-dd HH:mm:ss"),
-            "manager": {
-                "id": newsManager
+        const params: AxiosRequestConfig = {
+            method: 'PUT',
+            url: '/news/' + router.query.id,
+            data: {
+                "title": newsTitle,
+                "description": newsDescription,
+                "imageUrl": newsImageUrl,
+                "date": formatLocalDate(newsDate, "yyyy-MM-dd HH:mm:ss"),
+                "manager": {
+                    "id": newsManager
+                }
             }
-        })
+        };
+        requestBackend(params)
             .then(response => {
                 toast.success("Atualizado com sucesso!", {
                     position: toast.POSITION.TOP_RIGHT
