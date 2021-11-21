@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { useRouter } from 'next/dist/client/router';
 import { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { Manager } from '../../models/Manager';
-import { BASE_URL } from '../../utils/request';
+import { BASE_URL, requestBackend } from '../../utils/request';
 import ButtonPrimary from '../ButtonPrimary';
 import style from './style.module.scss';
 
@@ -16,14 +16,22 @@ export default function UserTable() {
    const [managers, setManagers] = useState<Manager[]>([])
 
    useEffect(() => {
-      axios.get(BASE_URL + '/managers')
+      const params: AxiosRequestConfig = {
+         method: 'GET',
+         url: '/managers'
+      };
+      requestBackend(params)
          .then(response => {
             setManagers(response.data.content)
          });
    }, []);
 
    function deleteManager(id: number) {
-      axios.delete(BASE_URL + '/managers/' + id)
+      const params: AxiosRequestConfig = {
+         method: 'DELETE',
+         url: '/managers/' + id
+      };
+      requestBackend(params)
          .then(response => {
             toast.success("Sucesso ao deletar!", {
                position: toast.POSITION.TOP_RIGHT
