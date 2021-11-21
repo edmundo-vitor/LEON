@@ -1,9 +1,10 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { useRouter } from 'next/dist/client/router';
 import { useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import { BASE_URL } from '../../utils/request';
+import { useBranches } from '../../hooks/useBranches';
+import { BASE_URL, requestBackend } from '../../utils/request';
 import style from './style.module.scss';
 
 type BranchProps = {
@@ -12,6 +13,7 @@ type BranchProps = {
 
 export default function BranchForm(props: BranchProps) {
     const router = useRouter();
+    const { addBranch, updateBranch } = useBranches();
 
     const [branchName, setBranchName] = useState("");
     const [branchState, setBranchState] = useState("");
@@ -22,7 +24,11 @@ export default function BranchForm(props: BranchProps) {
 
     useEffect(() => {
         if (props.isForEditing) {
-            axios.get(BASE_URL + '/branches/' + router.query.id)
+            const params: AxiosRequestConfig = {
+                method: 'GET',
+                url: '/branches/' + router.query.id
+            };
+            requestBackend(params)
                 .then(response => {
                     setBranchName(response.data.name);
                     setBranchState(response.data.state);
@@ -74,53 +80,28 @@ export default function BranchForm(props: BranchProps) {
                         onChange={e => setBranchDescription(e.target.value)} />
                 </label>
                 <button type="button" className={style.registerButton}
-                    onClick={() => props.isForEditing ? updateBranch() : saveBranch()}>
+                    onClick={() => props.isForEditing ?
+                        updateBranch({
+                            "name": branchName,
+                            "state": branchState,
+                            "road": branchRoad,
+                            "streetNumber": branchStreetNumber,
+                            "city": branchCity,
+                            "description": branchDescription
+                        })
+                        :
+                        addBranch({
+                            "name": branchName,
+                            "state": branchState,
+                            "road": branchRoad,
+                            "streetNumber": branchStreetNumber,
+                            "city": branchCity,
+                            "description": branchDescription
+                        })}>
                     {props.isForEditing ? "Salvar" : "Cadastrar"}
                 </button>
-            </form>
+            </form >
         )
-    }
-
-    function saveBranch() {
-        axios.post(BASE_URL + '/branches', {
-            "name": branchName,
-            "state": branchState,
-            "road": branchRoad,
-            "streetNumber": branchStreetNumber,
-            "city": branchCity,
-            "description": branchDescription
-        })
-            .then(response => {
-                router.push("/branches")
-            })
-            .catch(error => {
-                toast.error("Erro ao criar!", {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-            })
-    }
-
-    function updateBranch() {
-        axios.put(BASE_URL + '/branches/' + router.query.id, {
-            "name": branchName,
-            "state": branchState,
-            "road": branchRoad,
-            "streetNumber": branchStreetNumber,
-            "city": branchCity,
-            "description": branchDescription
-        })
-            .then(response => {
-                toast.success("Atualizado com sucesso!", {
-                    position: toast.POSITION.TOP_RIGHT
-                })
-
-                router.push("/branches")
-            })
-            .catch(error => {
-                toast.error("Erro ao atualizar!", {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-            })
     }
 
     return (
