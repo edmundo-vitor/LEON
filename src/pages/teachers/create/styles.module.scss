@@ -1,0 +1,107 @@
+.content {
+  padding: 2rem;
+  width: 100%;
+  background-color: var(--gray-100);
+
+  form {
+    overflow: auto;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    background: var(--gray-100);
+    box-shadow: 0 1rem 2rem var(--gray-300);
+
+    h2 {
+      font-weight: 500;
+      color: var(--gray-700);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 0 0.5rem 0;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      font-weight: 500;
+      margin-top: 2rem;
+      color: var(--gray-700);
+    }
+
+    .schedule {
+      border: 1px dashed var(--gray-300);
+      padding: 1rem;
+      border-radius: 0.5rem;
+
+      .days {
+        display: flex;  
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .gridContainer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+
+      section {
+        padding: 0 1rem;
+      }
+    }
+
+    table {
+      width: 100%;
+      margin: 0 auto;
+      margin-top: 2rem;
+      border-collapse: collapse;
+      box-shadow: 0 1rem 2rem var(--gray-300);
+
+      th {
+        background: var(--color-primary);
+        color: #fff;
+        padding: 1rem;
+
+        &:first-child {
+          border-top-left-radius: 0.5rem;
+        }
+
+        &:last-child {
+          border-top-right-radius: 0.5rem;
+        }
+      }
+
+      td {
+        color: var(--gray-700);
+        background: var(--gray-100);
+        padding: 1rem;
+        border-bottom: 1px solid var(--gray-300);
+
+        .cellContent {
+          padding: 1rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          time {
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 0.25rem;
+          }
+
+          p {
+            margin-bottom: 0.25rem;
+          }
+
+          span {
+            font-size: 0.7rem;
+          }
+        }
+      }
+
+      tr {
+        transition: filter 0.2s;
+
+        &:hover {
+          filter: brightness(0.95);
+        }
+      }
+    }
+  }
+}
