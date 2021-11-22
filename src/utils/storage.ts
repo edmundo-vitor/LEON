@@ -1,15 +1,15 @@
 const tokenKey = 'authData';
 
 type LoginResponse = {
-    access_token: string;
-    token_type: string;
-    expires_in: number;
-    authenticationType: string;
-    scope: string;
-    managerId?: number;
-    managerName?: string;
-    userId?: number;
-    userName?: string;
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  authenticationType: string;
+  scope: string;
+  managerId?: number;
+  managerName?: string;
+  userId?: number;
+  userName?: string;
 };
 
 export const saveAuthData = (obj: LoginResponse) => {
@@ -17,7 +17,7 @@ export const saveAuthData = (obj: LoginResponse) => {
 };
 
 export const getAuthData = () => {
-  const str = localStorage.getItem(tokenKey) ?? '{}';
+  const str = typeof window !== 'undefined' ? localStorage.getItem(tokenKey) ?? '{}' : null;
   return JSON.parse(str) as LoginResponse;
 };
 
