@@ -38,7 +38,7 @@ export async function getTeachers(
 export async function getTeacher(id: string): Promise<Teacher> {
   const { data } = await requestBackend({
     method: "GET",
-    url: `/teacher/${id}`,
+    url: `/teachers/${id}`,
   });
 
   return {

@@ -6,7 +6,7 @@ import styles from "./styles.module.scss";
 import { HStack } from "../../components/HStack";
 import ButtonPrimary from "../../components/ButtonPrimary";
 import Link from "next/link";
-import { useTeachers } from "../../hooks/useTeachers";
+import { prefetchTeacher, useTeachers } from "../../hooks/useTeachers";
 import { useMutation } from "react-query";
 import { requestBackend } from "../../utils/request";
 import { queryClient } from "../../utils/queryClient";
@@ -61,7 +61,10 @@ export default function Teachers() {
               </thead>
               <tbody>
                 {data.map((teacher) => (
-                  <tr key={teacher.id}>
+                  <tr
+                    key={teacher.id}
+                    onMouseEnter={() => prefetchTeacher(teacher.id)}
+                  >
                     <td>{teacher.id}</td>
                     <td>{teacher.name}</td>
                     <td>{teacher.telephone}</td>
