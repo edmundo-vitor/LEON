@@ -64,7 +64,6 @@ export default function CreateModality() {
 
   return (
     <>
-      <NavBar />
       <div className="flexRow">
         <SidebarMenu />
         <div className={styles.content}>

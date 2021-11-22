@@ -7,9 +7,27 @@ import { HStack } from "../../components/HStack";
 import ButtonPrimary from "../../components/ButtonPrimary";
 import Link from "next/link";
 import { useTeachers } from "../../hooks/useTeachers";
+import { useMutation } from "react-query";
+import { requestBackend } from "../../utils/request";
+import { queryClient } from "../../utils/queryClient";
 
 export default function Teachers() {
-  const { teachers, remove } = useTeachers();
+  const { data, isLoading, error } = useTeachers();
+
+  const deleteTeacherMutation = useMutation(
+    async (id: string) => {
+      await requestBackend({ method: "DELETE", url: `/teachers/${id}` });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("teachers");
+      },
+    }
+  );
+
+  async function handleTeacherRemoval(id: string) {
+    await deleteTeacherMutation.mutateAsync(id);
+  }
 
   return (
     <div className="flexRow">
@@ -23,7 +41,11 @@ export default function Teachers() {
               </a>
             </Link>
           </div>
-          {teachers.length === 0 ? (
+          {isLoading ? (
+            <p>Carregando os dados...</p>
+          ) : error ? (
+            <p>Falha na recuparação dos dados.</p>
+          ) : data.length === 0 ? (
             <p>Nenhum professor cadastrado</p>
           ) : (
             <table>
@@ -31,15 +53,18 @@ export default function Teachers() {
                 <tr>
                   <th>Id</th>
                   <th>Nome</th>
+                  <th>Telefone</th>
                   <th>Endereço</th>
+
                   <th />
                 </tr>
               </thead>
               <tbody>
-                {teachers.map((teacher) => (
+                {data.map((teacher) => (
                   <tr key={teacher.id}>
                     <td>{teacher.id}</td>
                     <td>{teacher.name}</td>
+                    <td>{teacher.telephone}</td>
                     <td>{teacher.address}</td>
                     <td>
                       <HStack spacing="1" style={{ justifyContent: "center" }}>
@@ -57,7 +82,7 @@ export default function Teachers() {
                           style={{ cursor: "pointer" }}
                           size="20"
                           color="red"
-                          onClick={() => remove(teacher.id)}
+                          onClick={() => handleTeacherRemoval(teacher.id)}
                         />
                       </HStack>
                     </td>

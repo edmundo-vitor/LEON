@@ -11,30 +11,56 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/dist/client/router";
 import * as yup from "yup";
+import { useMutation } from "react-query";
+import { requestBackend } from "../../../utils/request";
+import { queryClient } from "../../../utils/queryClient";
 
 interface CreateTeacherFormData {
   name: string;
   address: string;
+  telephone: string;
 }
 
 const createTeacherSchema = yup.object().shape({
   name: yup.string().required("Nome obrigatório"),
   address: yup.string().required("Endereço obrigatório"),
+  telephone: yup
+    .string()
+    .matches(
+      /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/,
+      "Número de telefone inválido"
+    )
+    .required("Telefone obrigatório"),
 });
 
 export default function CreateTeacher() {
   const router = useRouter();
 
-  const { create } = useTeachers();
-
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(createTeacherSchema),
   });
 
-  const handleCreateTeacher: SubmitHandler<CreateTeacherFormData> = async (
+  const createTeacherMutaton = useMutation(
+    async (teacher: CreateTeacherFormData) => {
+      const { data } = await requestBackend({
+        method: "POST",
+        url: "/teachers",
+        data: teacher,
+      });
+
+      return data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("teachers");
+      },
+    }
+  );
+
+  const handleTeacherCreation: SubmitHandler<CreateTeacherFormData> = async (
     data
   ) => {
-    create(data);
+    await createTeacherMutaton.mutateAsync(data);
 
     router.push("/teachers");
   };
@@ -44,7 +70,7 @@ export default function CreateTeacher() {
       <div className="flexRow">
         <SidebarMenu />
         <div className={styles.content}>
-          <form onSubmit={handleSubmit(handleCreateTeacher)}>
+          <form onSubmit={handleSubmit(handleTeacherCreation)}>
             <h2>Cadastrar novo professor </h2>
             <div className={styles.gridContainer}>
               <section>
@@ -59,6 +85,12 @@ export default function CreateTeacher() {
                     labelText="Endereço"
                     {...register("address")}
                     error={formState.errors.address?.message}
+                    obrigatory
+                  />
+                  <FormInput
+                    labelText="Telefone"
+                    {...register("telephone")}
+                    error={formState.errors.telephone?.message}
                     obrigatory
                   />
                 </Stack>
