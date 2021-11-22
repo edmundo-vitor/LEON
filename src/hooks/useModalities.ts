@@ -1,60 +1,45 @@
-import { useState } from "react";
+import { useQuery } from "react-query";
+import { queryClient } from "../utils/queryClient";
+import { requestBackend } from "../utils/request";
 
-export interface Schedule {
-  id: number;
-  start: Date;
-  end: Date;
-  days: string[];
-  vacancies: number;
-  teacher: string;
-}
-
-export interface Modality {
-  id: number;
+interface Modality {
+  id: string;
   name: string;
-  description: string;
-  schedules?: Schedule[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-interface UseModalities {
-  modalities: Modality[];
-  addModality: (modality: Modality) => void;
-  removeModality: (id: number) => void;
+const cacheName = "modalities";
+
+export async function getModalities(): Promise<Modality[]> {
+  const { data } = await requestBackend({
+    method: "GET",
+    url: "/modalities",
+  });
+
+  return data.map(({ createdAt, updatedAt, ...rest }: Modality) => {
+    return {
+      ...rest,
+      createdAt: new Date(createdAt).toLocaleString("pt-BR"),
+      updatedAt: new Date(updatedAt).toLocaleString("pt-BR"),
+    };
+  });
 }
 
-export function useModalities(): UseModalities {
-  const [modalities, setModalities] = useState<Modality[]>([
-    {
-      id: 1,
-      name: "Pilates",
-      description: "Tem exercícios bem legais",
-    },
-    {
-      id: 2,
-      name: "Musculação",
-      description: "Tem exercícios bem legais",
-    },
-    {
-      id: 3,
-      name: "Natação",
-      description: "Tem exercícios bem legais",
-    },
-    {
-      id: 4,
-      name: "Corrida",
-      description: "Tem exercícios bem legais",
-    },
-  ]);
-
-  function addModality(modality: Modality) {
-    setModalities((prevState) => [...prevState, modality]);
-  }
-
-  function removeModality(id: number) {
-    setModalities((prevState) =>
-      prevState.filter((modality) => modality.id !== id)
-    );
-  }
-
-  return { modalities, addModality, removeModality };
+export function useModalities() {
+  return useQuery([cacheName], getModalities, {
+    staleTime: 1000 * 60 * 10,
+  });
 }
+
+// export function useTeacher(id: string) {
+//   return useQuery([cacheName, id], () => getTeacher(id), {
+//     staleTime: 1000 * 60 * 10,
+//   });
+// }
+
+// export async function prefetchTeacher(id: string) {
+//   await queryClient.prefetchQuery([cacheName, id], () => getTeacher(id), {
+//     staleTime: 1000 * 60 * 10,
+//   });
+// }

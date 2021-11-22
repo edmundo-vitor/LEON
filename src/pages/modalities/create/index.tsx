@@ -1,65 +1,102 @@
 import ButtonPrimary from "../../../components/ButtonPrimary";
 import { FormInput } from "../../../components/FormInput";
 import { HStack } from "../../../components/HStack";
-import NavBar from "../../../components/NavBar";
 import SidebarMenu from "../../../components/SidebarMenu";
 import { Stack } from "../../../components/Stack";
-import { RiDeleteBack2Fill } from "react-icons/ri";
 import styles from "./styles.module.scss";
 import Link from "next/link";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { Modality, Schedule } from "../../../hooks/useModalities";
-import { MouseEvent } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { Teacher, useTeachers } from "../../../hooks/useTeachers";
+import { useBranches } from "../../../hooks/useBranches";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
+import { AiFillDelete } from "react-icons/ai";
+import { useMutation } from "react-query";
+import { requestBackend } from "../../../utils/request";
+import { queryClient } from "../../../utils/queryClient";
+import { useRouter } from "next/dist/client/router";
 
 export default function CreateModality() {
-  // const [numberOfFiles, setNumberOfFiles] = useState(1);
+  const router = useRouter();
 
-  const [modality, setModality] = useState<Modality>({
-    id: 5,
-    name: "",
-    description: "",
-    schedules: [],
-  });
+  const { branches } = useBranches();
 
-  const [currentSchedule, setCurrentSchedule] = useState<Schedule>({
-    id: Math.random(),
-    days: [],
-    end: new Date(),
-    start: new Date(),
-    teacher: "",
-    vacancies: 0,
-  });
+  const [teacherSearchTerm, setTeacherSearchTerm] = useState("");
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher>();
+  const [selectedBranchIndex, setSelectedBranchIndex] = useState(-1);
+  const [name, setName] = useState("");
+  const [startDate, setStartDate] = useState<Date | [Date, Date]>(new Date());
+  const [endDate, setEndDate] = useState<Date | [Date, Date]>(new Date());
+  const [vacancies, setVacancies] = useState(0);
+  const [schedules, setSchedules] = useState<any[]>([]);
 
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  useEffect(() => {
+    if (branches?.length > 0) {
+      setSelectedBranchIndex(0);
+    }
+  }, [branches]);
 
-  function handleAddDayButtonClick(e: ChangeEvent<HTMLInputElement>) {
-    const day = e.target.value;
+  const {
+    data: teachers,
+    isLoading: isLoadingTeachers,
+    error: teachersError,
+  } = useTeachers({ name: teacherSearchTerm });
 
-    if (e.target.checked) {
-      setCurrentSchedule((prevState) => ({
-        ...prevState,
-        days: [...prevState.days, day],
-      }));
-    } else if (currentSchedule.days.includes(day)) {
-      setCurrentSchedule((prevState) => ({
-        ...prevState,
-        days: prevState.days.filter((d) => d !== day),
-      }));
+  function addSchedule() {
+    if (!selectedTeacher) {
+      alert("Escolha um professor");
+    } else if (selectedBranchIndex === -1) {
+      alert("Escolha uma filial");
+    } else {
+      const branch = branches[selectedBranchIndex];
+      const newSchedule = {
+        branchId: branch.id,
+        teacherId: selectedTeacher.id,
+        teacherName: selectedTeacher.name,
+        branchName: branch.name,
+        maxUsers: vacancies,
+        startDate,
+        endDate,
+      };
+      setSchedules((prevState) => [...prevState, newSchedule]);
     }
   }
 
-  function handleAddScheduleButtonClick() {
-    // fazer a verificação com os horários já inseridos
-
-    setSchedules((prevState) => [...prevState, currentSchedule]);
-    setCurrentSchedule({
-      id: Math.random(),
-      days: [],
-      end: new Date(),
-      start: new Date(),
-      teacher: "",
-      vacancies: 0,
+  function handleScheduleRemoval(index: number) {
+    setSchedules((prevState) => {
+      return prevState.filter((_, i) => i !== index);
     });
+  }
+
+  const createModalityMutation = useMutation(
+    async (modality: any) => {
+      const { data } = await requestBackend({
+        method: "POST",
+        url: "/modalities",
+        data: modality,
+      });
+
+      return data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("modalities");
+      },
+    }
+  );
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+
+    console.log(schedules);
+
+    await createModalityMutation.mutateAsync({
+      name,
+      schedules,
+    });
+
+    router.push("/modalities");
   }
 
   return (
@@ -67,248 +104,192 @@ export default function CreateModality() {
       <div className="flexRow">
         <SidebarMenu />
         <div className={styles.content}>
-          <form>
+          <form onSubmit={handleSubmit}>
             <h2>Cadastrar nova Modalidade</h2>
             <div className={styles.gridContainer}>
               <section>
                 <Stack spacing="1">
                   <FormInput
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     labelText="Nome"
-                    value={modality.name}
-                    onChange={(e) =>
-                      setModality((prevState) => ({
-                        ...prevState,
-                        name: e.target.value,
-                      }))
-                    }
-                    obrigatory
-                  />
-                  <FormInput
-                    labelText="Descrição"
-                    value={modality.description}
-                    onChange={(e) =>
-                      setModality((prevState) => ({
-                        ...prevState,
-                        description: e.target.value,
-                      }))
-                    }
                     obrigatory
                   />
                   <h3>Cadastrar horário</h3>
                   <div className={styles.schedule}>
                     <Stack>
                       <HStack>
-                        <FormInput
-                          labelText="Início"
-                          type="time"
-                          obrigatory
-                          style={{ width: "fit-content" }}
-                          onChange={(e) =>
-                            setCurrentSchedule((prevState) => ({
-                              ...prevState,
-                              start: new Date(e.target.value),
-                            }))
-                          }
-                        />
-                        <FormInput
-                          labelText="Fim"
-                          type="time"
-                          obrigatory
-                          style={{ width: "fit-content" }}
-                          onChange={(e) => {
-                            console.log(e.target.value);
-                            setCurrentSchedule((prevState) => ({
-                              ...prevState,
-                              end: new Date(e.target.value),
-                            }));
-                          }}
-                        />
-                        <FormInput
-                          labelText="Vagas"
-                          obrigatory
-                          style={{ width: "100px" }}
-                          value={currentSchedule.vacancies}
-                          onChange={(e) =>
-                            setCurrentSchedule((prevState) => ({
-                              ...prevState,
-                              vacancies: Number(e.target.value),
-                            }))
-                          }
-                        />
-                        <FormInput
-                          labelText="Professor"
-                          obrigatory
-                          placeholder="Pesquise o professor pelo nome"
-                          value={currentSchedule.teacher}
-                          onChange={(e) =>
-                            setCurrentSchedule((prevState) => ({
-                              ...prevState,
-                              teacher: e.target.value,
-                            }))
-                          }
-                        />
+                        <div>
+                          <label>Início</label>
+                          <DatePicker
+                            timeInputLabel="Hora:"
+                            selected={startDate as Date}
+                            showTimeInput
+                            dateFormat="dd/MM/yyyy h:mm aa"
+                            onChange={(date) => {
+                              setStartDate(date);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label>Término</label>
+                          <DatePicker
+                            timeInputLabel="Hora:"
+                            selected={endDate as Date}
+                            showTimeInput
+                            dateFormat="dd/MM/yyyy h:mm aa"
+                            onChange={(date) => {
+                              setEndDate(date);
+                            }}
+                          />
+                        </div>
+                        <Stack spacing="0.01">
+                          <label>Filial</label>
+                          <select
+                            onChange={(e) =>
+                              setSelectedBranchIndex(
+                                Number(e.currentTarget.value)
+                              )
+                            }
+                            style={{ width: "100px" }}
+                          >
+                            {branches.map((branch, index) => (
+                              <option value={index} key={branch.id}>
+                                {branch.name}
+                              </option>
+                            ))}
+                          </select>
+                        </Stack>
+                        <div>
+                          <label>Vagas</label>
+                          <input
+                            value={vacancies}
+                            onChange={(e) =>
+                              setVacancies(Number(e.target.value))
+                            }
+                            style={{ width: "50px" }}
+                          />
+                        </div>
                       </HStack>
-                      <div className={styles.days}>
-                        <HStack spacing="1">
-                          <span>Seg</span>
-                          <FormInput
-                            value="Seg"
-                            type="checkbox"
-                            onChange={handleAddDayButtonClick}
-                          />
-                          <span>Ter</span>
-                          <FormInput
-                            value="Ter"
-                            type="checkbox"
-                            onChange={handleAddDayButtonClick}
-                          />
-                          <span>Qua</span>
-                          <FormInput
-                            value="Qua"
-                            type="checkbox"
-                            onChange={handleAddDayButtonClick}
-                          />
-                          <span>Qui</span>
-                          <FormInput
-                            value="Qui"
-                            type="checkbox"
-                            onChange={handleAddDayButtonClick}
-                          />
-                          <span>Sex</span>
-                          <FormInput
-                            value="Sex"
-                            type="checkbox"
-                            onChange={handleAddDayButtonClick}
-                          />
-                          <span>Sab</span>
-                          <FormInput
-                            value="Sab"
-                            type="checkbox"
-                            onChange={handleAddDayButtonClick}
-                          />
-                        </HStack>
-                        <ButtonPrimary
-                          type="button"
-                          onClick={handleAddScheduleButtonClick}
-                        >
-                          +
-                        </ButtonPrimary>
-                      </div>
+                      <ButtonPrimary type="button" onClick={addSchedule}>
+                        Adicionar
+                      </ButtonPrimary>
                     </Stack>
                   </div>
                 </Stack>
               </section>
-              {/* <section>
-                {Array(numberOfFiles)
-                  .fill(null)
-                  .map((index) => (
-                    <FormInput key={index} type="file" />
-                  ))}
-                <ButtonPrimary
-                  onClick={() =>
-                    numberOfFiles < 5 && setNumberOfFiles((ps) => ps + 1)
-                  }
+              <section>
+                {isLoadingTeachers ? (
+                  <p>Carregando os dados...</p>
+                ) : teachersError ? (
+                  <p>Falha na recuparação dos dados.</p>
+                ) : teachers.length === 0 ? (
+                  <p>
+                    Nenhum professor cadastrado. Cadastre alguma para continuar
+                  </p>
+                ) : (
+                  <div>
+                    <span style={{ fontWeight: 500 }}>
+                      Clique para escolher algum professor para o cadastro do
+                      horário
+                    </span>
+                    <div className={styles.tabbleWrapper}>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Id</th>
+                            <th>Nome</th>
+                            <th>Telefone</th>
+                            <th>Endereço</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {teachers.map((teacher) => (
+                            <tr
+                              key={teacher.id}
+                              onClick={() => setSelectedTeacher(teacher)}
+                              style={{
+                                background:
+                                  selectedTeacher?.id === teacher.id
+                                    ? "#B8B4D8"
+                                    : "",
+                              }}
+                            >
+                              <td>{teacher.id}</td>
+                              <td>{teacher.name}</td>
+                              <td>{teacher.telephone}</td>
+                              <td>{teacher.address}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+                <FormInput
+                  onChange={(e) => setTeacherSearchTerm(e.target.value)}
+                  obrigatory
+                  placeholder="Pesquise o professor pelo nome"
                 />
-              </section> */}
+              </section>
             </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Seg</th>
-                  <th>Ter</th>
-                  <th>Qua</th>
-                  <th>Qui</th>
-                  <th>Sex</th>
-                  <th>Sab</th>
-                </tr>
-              </thead>
-              <tbody>
-                {schedules.map((schedule) => (
-                  <tr key={schedule.id}>
-                    <td>
-                      {schedule.days.includes("Seg") && (
-                        <div className={styles.cellContent}>
-                          <HStack spacing="0.5">
-                            <time>10:00 - 11:00</time>
-                            <RiDeleteBack2Fill color="red" />
-                          </HStack>
-                          <p>{schedule.teacher}</p>
-                          <span>{schedule.vacancies}</span>
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      {schedule.days.includes("Ter") && (
-                        <div className={styles.cellContent}>
-                          <HStack spacing="0.5">
-                            <time>10:00 - 11:00</time>
-                            <RiDeleteBack2Fill color="red" />
-                          </HStack>
-                          <p>{schedule.teacher}</p>
-                          <span>{schedule.vacancies}</span>
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      {schedule.days.includes("Qua") && (
-                        <div className={styles.cellContent}>
-                          <HStack spacing="0.5">
-                            <time>10:00 - 11:00</time>
-                            <RiDeleteBack2Fill color="red" />
-                          </HStack>
-                          <p>{schedule.teacher}</p>
-                          <span>{schedule.vacancies}</span>
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      {schedule.days.includes("Qui") && (
-                        <div className={styles.cellContent}>
-                          <HStack spacing="0.5">
-                            <time>10:00 - 11:00</time>
-                            <RiDeleteBack2Fill color="red" />
-                          </HStack>
-                          <p>{schedule.teacher}</p>
-                          <span>{schedule.vacancies}</span>
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      {schedule.days.includes("Sex") && (
-                        <div className={styles.cellContent}>
-                          <HStack spacing="0.5">
-                            <time>10:00 - 11:00</time>
-                            <RiDeleteBack2Fill color="red" />
-                          </HStack>
-                          <p>{schedule.teacher}</p>
-                          <span>{schedule.vacancies}</span>
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      {schedule.days.includes("Sab") && (
-                        <div className={styles.cellContent}>
-                          <HStack spacing="0.5">
-                            <time>10:00 - 11:00</time>
-                            <RiDeleteBack2Fill color="red" />
-                          </HStack>
-                          <p>{schedule.teacher}</p>
-                          <span>{schedule.vacancies}</span>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {schedules.length > 0 && (
+              <div style={{ marginTop: "2rem" }}>
+                <p
+                  style={{
+                    fontWeight: 500,
+                    textAlign: "center",
+                    color: "#333",
+                  }}
+                >
+                  Horários Cadastrados
+                </p>
+                <div className={styles.tabbleWrapper}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Início</th>
+                        <th>Fim</th>
+                        <th>Professor</th>
+                        <th>Vagas</th>
+                        <th>Filial</th>
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {schedules.map((schedule, index) => (
+                        <tr key={Math.random()}>
+                          <td>{schedule.startDate.toLocaleString()}</td>
+                          <td>{schedule.endDate.toLocaleString()}</td>
+                          <td>{schedule.teacherName}</td>
+                          <td>{schedule.maxUsers}</td>
+                          <td>{schedule.branchName}</td>
+                          <td>
+                            <AiFillDelete
+                              style={{ cursor: "pointer" }}
+                              size="20"
+                              color="red"
+                              onClick={() => handleScheduleRemoval(index)}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             <HStack
               spacing="1"
               style={{ justifyContent: "flex-end", marginTop: "2rem" }}
             >
               <Link href="/modalities" passHref>
-                <ButtonPrimary style={{ background: "gray" }}>
-                  Cancelar
-                </ButtonPrimary>
+                <a>
+                  <ButtonPrimary style={{ background: "gray" }}>
+                    Cancelar
+                  </ButtonPrimary>
+                </a>
               </Link>
               <ButtonPrimary type="submit">Cadastrar</ButtonPrimary>
             </HStack>

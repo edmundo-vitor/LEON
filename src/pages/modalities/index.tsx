@@ -7,9 +7,27 @@ import { HStack } from "../../components/HStack";
 import ButtonPrimary from "../../components/ButtonPrimary";
 import Link from "next/link";
 import { useModalities } from "../../hooks/useModalities";
+import { requestBackend } from "../../utils/request";
+import { queryClient } from "../../utils/queryClient";
+import { useMutation } from "react-query";
 
 export default function Modalities() {
-  const { modalities, removeModality } = useModalities();
+  const { data, isLoading, error } = useModalities();
+
+  const deleteModalityMutation = useMutation(
+    async (id: string) => {
+      await requestBackend({ method: "DELETE", url: `/modalities/${id}` });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("modalities");
+      },
+    }
+  );
+
+  async function handleMutationRemoval(id: string) {
+    await deleteModalityMutation.mutateAsync(id);
+  }
 
   return (
     <div className="flexRow">
@@ -23,31 +41,46 @@ export default function Modalities() {
               </a>
             </Link>
           </div>
-          {modalities.length === 0 ? (
-            <p>Nenhuma modalidade cadastrada</p>
+          {isLoading ? (
+            <p>Carregando os dados...</p>
+          ) : error ? (
+            <p>Falha na recuparação dos dados.</p>
+          ) : data.length === 0 ? (
+            <p>Nenhuma modalidade castrada</p>
           ) : (
             <table>
               <thead>
                 <tr>
+                  <th>Id</th>
                   <th>Nome</th>
-                  <th>Descrição</th>
                   <th />
                 </tr>
               </thead>
               <tbody>
-                {modalities.map((modality) => (
-                  <tr key={modality.id}>
+                {data.map((modality) => (
+                  <tr
+                    key={modality.id}
+                    // onMouseEnter={() => prefetchTeacher(teacher.id)}
+                  >
+                    <td>{modality.id}</td>
                     <td>{modality.name}</td>
-                    <td>{modality.description}</td>
                     <td>
                       <HStack spacing="1" style={{ justifyContent: "center" }}>
                         <AiOutlineInfoCircle size="20" />
-                        <AiFillEdit size="20" color="gray" />
+                        <Link href={`/modalities/edit/${modality.id}`} passHref>
+                          <a>
+                            <AiFillEdit
+                              style={{ cursor: "pointer" }}
+                              size="20"
+                              color="gray"
+                            />
+                          </a>
+                        </Link>
                         <AiFillDelete
                           style={{ cursor: "pointer" }}
                           size="20"
                           color="red"
-                          onClick={() => removeModality(modality.id)}
+                          onClick={() => handleMutationRemoval(modality.id)}
                         />
                       </HStack>
                     </td>
