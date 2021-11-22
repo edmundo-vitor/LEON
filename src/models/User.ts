@@ -1,3 +1,4 @@
+
 export type User = {
    id?: number;
    email: string;
@@ -49,6 +50,3 @@ export const usersList: User[] = [
       restitution: 0
    }
 ];
-
-//funcao para saber se é a acesso é de um usuário ou administrador
-export const isUser: boolean = false;

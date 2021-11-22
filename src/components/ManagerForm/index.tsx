@@ -21,7 +21,6 @@ export default function UserForm(props: ManagerProps) {
    const [managerPassword, setManagerPassword] = useState("");
    const [managerAddress, setManagerAddress] = useState("");
    const [managerPhone, setManagerPhone] = useState("");
-   const [managerPermission, setManagerPermission] = useState("");
    const [managerBranch, setManagerBranch] = useState(0);
    const [managerRole, setManagerRole] = useState(0);
 
@@ -167,7 +166,7 @@ export default function UserForm(props: ManagerProps) {
             ],
             "authentication": {
                "email": managerEmail,
-               "password": "default",
+               "password": "",
                "roles": [
                   {
                      "id": managerRole === 0 ? roles[0].id : managerRole

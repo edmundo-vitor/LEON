@@ -4,7 +4,6 @@ import { QueryClientProvider } from "react-query";
 import "../../styles/globals.scss";
 import Footer from "../components/Footer";
 import NavBar from "../components/NavBar";
-import { isUser } from "../models/User";
 import { queryClient } from "../utils/queryClient";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -17,7 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         router.asPath.startsWith("/register") ? (
           <></>
         ) : (
-          <NavBar isUser={isUser} />
+          <NavBar />
         )}
 
         <Component {...pageProps} />

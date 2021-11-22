@@ -1,15 +1,22 @@
 import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getAuthData } from "../../utils/storage";
 import style from "./style.module.scss";
 
-export default function SidebarMenu(props) {
+export default function SidebarMenu() {
+   const [isUser, setIsUser] = useState(false);
+
+   useEffect(() => {
+      typeof window !== 'undefined' ? getAuthData().authenticationType === "user" ?
+         setIsUser(true) : setIsUser(false) : null
+   }, [])
 
    const router = useRouter();
 
    return (
       <div className={style.sidebarMenu}>
-         {props.isUser ?
+         {isUser ?
             <>
                <Link href="/users/info"><a className={router.asPath.startsWith("/users/info") ? "activeMenu" : ""}>Informações</a></Link>
                <Link href="/users/plan"><a className={router.asPath.startsWith("/users/plan") ? "activeMenu" : ""}>Meu plano</a></Link>
