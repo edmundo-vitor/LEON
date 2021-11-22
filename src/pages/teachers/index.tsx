@@ -15,7 +15,7 @@ export default function Teachers() {
   const { data, isLoading, error } = useTeachers();
 
   const deleteTeacherMutation = useMutation(
-    async (id: string) => {
+    async (id: number) => {
       await requestBackend({ method: "DELETE", url: `/teachers/${id}` });
     },
     {
@@ -25,7 +25,7 @@ export default function Teachers() {
     }
   );
 
-  async function handleTeacherRemoval(id: string) {
+  async function handleTeacherRemoval(id: number) {
     await deleteTeacherMutation.mutateAsync(id);
   }
 
@@ -55,7 +55,8 @@ export default function Teachers() {
                   <th>Nome</th>
                   <th>Telefone</th>
                   <th>Endereço</th>
-
+                  <th>Data de criação</th>
+                  <th>Data de atualização</th>
                   <th />
                 </tr>
               </thead>
@@ -69,6 +70,8 @@ export default function Teachers() {
                     <td>{teacher.name}</td>
                     <td>{teacher.telephone}</td>
                     <td>{teacher.address}</td>
+                    <td>{teacher.createdAt}</td>
+                    <td>{teacher.updatedAt}</td>
                     <td>
                       <HStack spacing="1" style={{ justifyContent: "center" }}>
                         <AiOutlineInfoCircle size="20" />

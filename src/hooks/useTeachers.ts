@@ -2,8 +2,8 @@ import { useQuery } from "react-query";
 import { queryClient } from "../utils/queryClient";
 import { requestBackend } from "../utils/request";
 
-interface Teacher {
-  id: string;
+export interface Teacher {
+  id: number;
   name: string;
   address: string;
   telephone: string;
@@ -35,7 +35,7 @@ export async function getTeachers(
   });
 }
 
-export async function getTeacher(id: string): Promise<Teacher> {
+export async function getTeacher(id: number): Promise<Teacher> {
   const { data } = await requestBackend({
     method: "GET",
     url: `/teachers/${id}`,
@@ -58,13 +58,13 @@ export function useTeachers(params?: GetTeachersQueryParams) {
   );
 }
 
-export function useTeacher(id: string) {
+export function useTeacher(id: number) {
   return useQuery([cacheName, id], () => getTeacher(id), {
     staleTime: 1000 * 60 * 10,
   });
 }
 
-export async function prefetchTeacher(id: string) {
+export async function prefetchTeacher(id: number) {
   await queryClient.prefetchQuery([cacheName, id], () => getTeacher(id), {
     staleTime: 1000 * 60 * 10,
   });

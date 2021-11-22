@@ -1,7 +1,6 @@
 import ButtonPrimary from "../../../components/ButtonPrimary";
 import { FormInput } from "../../../components/FormInput";
 import { HStack } from "../../../components/HStack";
-import NavBar from "../../../components/NavBar";
 import SidebarMenu from "../../../components/SidebarMenu";
 import { Stack } from "../../../components/Stack";
 import styles from "./styles.module.scss";
@@ -39,7 +38,7 @@ export default function CreateTeacher() {
 
   const { id } = router.query;
 
-  const { data, isLoading, error } = useTeacher(String(id));
+  const { data, isLoading, error } = useTeacher(Number(id));
 
   const editTeacher = useMutation(
     async (teacher: EditTeacherFormData) => {
@@ -82,52 +81,50 @@ export default function CreateTeacher() {
   }, [data, reset]);
 
   return (
-    <>
-      <div className="flexRow">
-        <SidebarMenu />
-        <div className={styles.content}>
-          <form onSubmit={handleSubmit(handleTeacherUpdate)}>
-            <h2>Atualizar professor</h2>
-            <div className={styles.gridContainer}>
-              <section>
-                <Stack spacing="1">
-                  <FormInput
-                    labelText="Nome"
-                    {...register("name")}
-                    error={formState.errors.name?.message}
-                    obrigatory
-                  />
-                  <FormInput
-                    labelText="Endereço"
-                    {...register("address")}
-                    error={formState.errors.address?.message}
-                    obrigatory
-                  />
-                  <FormInput
-                    labelText="Telefone"
-                    {...register("telephone")}
-                    error={formState.errors.telephone?.message}
-                    obrigatory
-                  />
-                </Stack>
-              </section>
-            </div>
-            <HStack
-              spacing="1"
-              style={{ justifyContent: "flex-end", marginTop: "2rem" }}
-            >
-              <Link href="/teachers" passHref>
-                <a>
-                  <ButtonPrimary style={{ background: "gray" }}>
-                    Cancelar
-                  </ButtonPrimary>
-                </a>
-              </Link>
-              <ButtonPrimary type="submit">Editar</ButtonPrimary>
-            </HStack>
-          </form>
-        </div>
+    <div className="flexRow">
+      <SidebarMenu />
+      <div className={styles.content}>
+        <form onSubmit={handleSubmit(handleTeacherUpdate)}>
+          <h2>Atualizar professor</h2>
+          <div className={styles.gridContainer}>
+            <section>
+              <Stack spacing="1">
+                <FormInput
+                  labelText="Nome"
+                  {...register("name")}
+                  error={formState.errors.name?.message}
+                  obrigatory
+                />
+                <FormInput
+                  labelText="Endereço"
+                  {...register("address")}
+                  error={formState.errors.address?.message}
+                  obrigatory
+                />
+                <FormInput
+                  labelText="Telefone"
+                  {...register("telephone")}
+                  error={formState.errors.telephone?.message}
+                  obrigatory
+                />
+              </Stack>
+            </section>
+          </div>
+          <HStack
+            spacing="1"
+            style={{ justifyContent: "flex-end", marginTop: "2rem" }}
+          >
+            <Link href="/teachers" passHref>
+              <a>
+                <ButtonPrimary style={{ background: "gray" }}>
+                  Cancelar
+                </ButtonPrimary>
+              </a>
+            </Link>
+            <ButtonPrimary type="submit">Editar</ButtonPrimary>
+          </HStack>
+        </form>
       </div>
-    </>
+    </div>
   );
 }
