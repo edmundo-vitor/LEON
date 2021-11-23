@@ -9,7 +9,7 @@ export default function SidebarMenu() {
 
    useEffect(() => {
       typeof window !== 'undefined' ? getAuthData().authenticationType === "user" ?
-         setIsUser(true) : setIsUser(false) : null
+         setIsUser(false) : setIsUser(false) : null
    }, [])
 
    const router = useRouter();

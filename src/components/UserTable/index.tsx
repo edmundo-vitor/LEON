@@ -1,29 +1,44 @@
 import { useRouter } from 'next/dist/client/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import ButtonPrimary from '../ButtonPrimary';
 import style from './style.module.scss';
+import { AxiosRequestConfig } from 'axios';
+import { requestBackend } from '../../utils/request';
 
 import { User } from '../../models/User';
 
-type UserTableProps = {
-   userList: User[];
-}
+export default function UserTable() {
 
-export default function UserTable(props: UserTableProps) {
-
-   const [users, setUsers] = useState(props.userList)
+   const [users, setUsers] = useState<User[]>([]);
+   const [update, setUpdate] = useState<[]>([]);
 
    const router = useRouter();
 
-   function deleteUser(id) {
-      let newUsersList: User[] = [];
+   useEffect(() => {
+      const params: AxiosRequestConfig = {
+         method: 'GET',
+         url: '/users'
+      };
 
-      users.map(user => {
-         user.id !== id ? newUsersList.push(user) : null
+      requestBackend(params).then(response => {
+         let listResponse = response.data.content as User[];
+         setUsers(listResponse);
+      });
+ 
+   }, [update]);
+
+   async function deleteUser(id:number) {
+      const params: AxiosRequestConfig = {
+         method: 'DELETE',
+         url: `/users/${id}`
+      };
+
+      await requestBackend(params).then(response => {
+         console.log(response);
       });
 
-      setUsers(newUsersList);
+      setUpdate([]);
    }
 
    return (
@@ -41,18 +56,18 @@ export default function UserTable(props: UserTableProps) {
                      <tr>
                         <th>#</th>
                         <th>Nome</th>
-                        <th>Endereço</th>
+                        <th>e-mail</th>
                         <th>Ações</th>
                      </tr>
                   </thead>
 
                   <tbody>
-                     {users.map(user => {
+                     {users.map((user, index) => {
                         return (
                            <tr key={user.id}>
-                              <td>{user.id}</td>
+                              <td>{index + 1}</td>
                               <td>{user.name}</td>
-                              <td>{user.address}</td>
+                              <td>{user.authentication.email}</td>
                               <td className={style.button}>
                                  <button className="btn btn-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
