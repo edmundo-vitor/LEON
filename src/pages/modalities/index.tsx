@@ -1,12 +1,11 @@
 import SidebarMenu from "../../components/SidebarMenu";
-import NavBar from "../../components/NavBar";
 import { AiFillDelete, AiFillEdit, AiOutlineInfoCircle } from "react-icons/ai";
 
 import styles from "./styles.module.scss";
 import { HStack } from "../../components/HStack";
 import ButtonPrimary from "../../components/ButtonPrimary";
 import Link from "next/link";
-import { useModalities } from "../../hooks/useModalities";
+import { prefetchModality, useModalities } from "../../hooks/useModalities";
 import { requestBackend } from "../../utils/request";
 import { queryClient } from "../../utils/queryClient";
 import { useMutation } from "react-query";
@@ -15,7 +14,7 @@ export default function Modalities() {
   const { data, isLoading, error } = useModalities();
 
   const deleteModalityMutation = useMutation(
-    async (id: string) => {
+    async (id: number) => {
       await requestBackend({ method: "DELETE", url: `/modalities/${id}` });
     },
     {
@@ -25,7 +24,7 @@ export default function Modalities() {
     }
   );
 
-  async function handleMutationRemoval(id: string) {
+  async function handleMutationRemoval(id: number) {
     await deleteModalityMutation.mutateAsync(id);
   }
 
@@ -60,13 +59,20 @@ export default function Modalities() {
                 {data.map((modality) => (
                   <tr
                     key={modality.id}
-                    // onMouseEnter={() => prefetchTeacher(teacher.id)}
+                    onMouseEnter={() => prefetchModality(modality.id)}
                   >
                     <td>{modality.id}</td>
                     <td>{modality.name}</td>
                     <td>
                       <HStack spacing="1" style={{ justifyContent: "center" }}>
-                        <AiOutlineInfoCircle size="20" />
+                        <Link
+                          href={`/modalities/schedules/${modality.id}`}
+                          passHref
+                        >
+                          <a>
+                            <AiOutlineInfoCircle size="20" />
+                          </a>
+                        </Link>
                         <Link href={`/modalities/edit/${modality.id}`} passHref>
                           <a>
                             <AiFillEdit
